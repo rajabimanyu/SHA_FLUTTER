@@ -1,0 +1,4 @@
+enum ThingStatus {
+  on,
+  off,
+}
