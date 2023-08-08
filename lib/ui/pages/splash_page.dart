@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:sha/route/routes.dart';
 
@@ -9,7 +10,12 @@ class SplashPage extends StatelessWidget {
     return Center(
       child: GestureDetector(
         onTap: () {
-          Navigator.of(context).pushNamed(ShaRoutes.loginPageRoute);
+          if (FirebaseAuth.instance.currentUser == null) {
+            Navigator.of(context).popAndPushNamed(ShaRoutes.loginPageRoute);
+            // Navigator.of(context).pushNamed(ShaRoutes.homePageRoute);
+          } else {
+            Navigator.of(context).pushNamed(ShaRoutes.homePageRoute);
+          }
         },
         child: const Text(
           'SHA',

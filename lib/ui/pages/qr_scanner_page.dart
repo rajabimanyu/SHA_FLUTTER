@@ -8,8 +8,71 @@ class QrScannerPage extends StatefulWidget {
   State<QrScannerPage> createState() => _QrScannerPageState();
 }
 
-class _QrScannerPageState extends State<QrScannerPage> {
-  final MobileScannerController _cameraController = MobileScannerController();
+class _QrScannerPageState extends State<QrScannerPage>
+    with TickerProviderStateMixin {
+  final MobileScannerController _cameraController = MobileScannerController(
+    detectionSpeed: DetectionSpeed.noDuplicates,
+  );
+
+  Widget _buildResultBottomSheet(String barcode) {
+    return Container(
+      width: double.infinity,
+      decoration: const BoxDecoration(
+        borderRadius: BorderRadius.only(
+          topLeft: Radius.circular(16),
+          topRight: Radius.circular(16),
+        ),
+      ),
+      padding: const EdgeInsets.symmetric(
+        horizontal: 16,
+        vertical: 20,
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text(
+            'Scanned data:',
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+          const SizedBox(height: 16),
+          Text(
+            barcode,
+            style: const TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+            ),
+            textAlign: TextAlign.center,
+          ),
+          const SizedBox(height: 16),
+          SizedBox(
+            width: double.infinity,
+            height: 56,
+            child: ElevatedButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+                // TODO: Proceed to next screen
+              },
+              style: ButtonStyle(
+                backgroundColor: MaterialStatePropertyAll(
+                  Theme.of(context).buttonTheme.colorScheme?.primary,
+                ),
+              ),
+              child: Text(
+                'Proceed',
+                style: TextStyle(
+                  color: Theme.of(context).buttonTheme.colorScheme?.onPrimary,
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -35,77 +98,13 @@ class _QrScannerPageState extends State<QrScannerPage> {
           for (final barcode in barcodes) {
             debugPrint('Barcode scanned => ${barcode.rawValue}');
             if (barcode.rawValue?.isNotEmpty == true) {
-              showDialog(
+              showModalBottomSheet(
+                enableDrag: true,
+                transitionAnimationController:
+                    BottomSheet.createAnimationController(this),
                 context: context,
                 builder: (context) {
-                  return BottomSheet(
-                    builder: (context) {
-                      return Container(
-                        width: double.infinity,
-                        decoration: const BoxDecoration(
-                          borderRadius: BorderRadius.only(
-                            topLeft: Radius.circular(16),
-                            topRight: Radius.circular(16),
-                          ),
-                        ),
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 16,
-                          vertical: 20,
-                        ),
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            const Text(
-                              'Scanned data:',
-                              style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
-                            const SizedBox(height: 16),
-                            Text(
-                              barcode.rawValue!,
-                              style: const TextStyle(
-                                fontSize: 20,
-                                fontWeight: FontWeight.bold,
-                              ),
-                              textAlign: TextAlign.center,
-                            ),
-                            const SizedBox(height: 16),
-                            SizedBox(
-                              width: double.infinity,
-                              height: 56,
-                              child: ElevatedButton(
-                                onPressed: () {
-                                  Navigator.of(context).pop();
-                                  // TODO: Proceed to next screen
-                                },
-                                style: ButtonStyle(
-                                  backgroundColor: MaterialStatePropertyAll(
-                                    Theme.of(context)
-                                        .buttonTheme
-                                        .colorScheme
-                                        ?.primary,
-                                  ),
-                                ),
-                                child: Text(
-                                  'Proceed',
-                                  style: TextStyle(
-                                    color: Theme.of(context)
-                                        .buttonTheme
-                                        .colorScheme
-                                        ?.onPrimary,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      );
-                    },
-                    onClosing: () {},
-                  );
+                  return _buildResultBottomSheet(barcode.rawValue!);
                 },
               );
             }
