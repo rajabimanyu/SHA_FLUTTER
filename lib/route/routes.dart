@@ -7,4 +7,5 @@ class ShaRoutes {
   static const String homePageRoute = '/home';
   static const String settingsPageRoute = '/settings';
   static const String notificationsPageRoute = '/notifications';
+  static const String registerNewEnvRoute = '/register_new_env';
 }

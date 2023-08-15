@@ -45,6 +45,12 @@ class ShaRouterModule implements RouterModule {
           settings: settings,
         );
       },
+      ShaRoutes.registerNewEnvRoute: (settings) {
+        return ShaPageRoute(
+          builder: (_) => const RegisterNewEnvPage(),
+          settings: settings,
+        );
+      },
     };
   }
 }
