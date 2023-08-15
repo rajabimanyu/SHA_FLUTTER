@@ -4,11 +4,15 @@ import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_signin_button/button_list.dart';
 import 'package:flutter_signin_button/button_view.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:kt_dart/collection.dart';
-import 'package:sha/auth/auth_service.dart';
+import 'package:sha/base/di/inject_config.dart';
+import 'package:sha/core/model/ui_state.dart';
+import 'package:sha/route/routes.dart';
+import 'package:sha/ui/cubit/login_cubit.dart';
 import 'package:sizer/sizer.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -20,7 +24,6 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
-  int _currentIndex = 0;
   final _carouselItems = [
     const KtPair('assets/images/connected_world.svg',
         'Control your home anywhere around the world.'),
@@ -38,11 +41,6 @@ class _LoginPageState extends State<LoginPage> {
         height: 32.990.h,
         viewportFraction: 1,
         autoPlayInterval: const Duration(seconds: 3),
-        onPageChanged: (index, reason) {
-          setState(() {
-            _currentIndex = index;
-          });
-        },
       ),
       itemBuilder: (context, index, realIndex) {
         return Column(
@@ -69,19 +67,19 @@ class _LoginPageState extends State<LoginPage> {
       child: RichText(
         text: TextSpan(
           style: Theme.of(context).textTheme.bodyLarge,
-          text: "By clicking signing in you agree to our ",
+          text: 'By clicking signing in you agree to our ',
           children: [
             TextSpan(
-              text: "User Agreement",
+              text: 'User Agreement',
               style: const TextStyle(color: Colors.blue),
               recognizer: TapGestureRecognizer()
                 ..onTap = () {
                   _launchUrl('https://www.google.com');
                 },
             ),
-            const TextSpan(text: " and "),
+            const TextSpan(text: ' and '),
             TextSpan(
-              text: "Privacy Policy",
+              text: 'Privacy Policy',
               style: const TextStyle(color: Colors.blue),
               recognizer: TapGestureRecognizer()
                 ..onTap = () {
@@ -89,6 +87,56 @@ class _LoginPageState extends State<LoginPage> {
                 },
             ),
           ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildLoginButtons(BuildContext context) {
+    final theme = Theme.of(context);
+    return BlocProvider(
+      create: (_) => LoginCubit(getIt.get()),
+      child: BlocListener<LoginCubit, UIState>(
+        listener: (context, state) {
+          if (state is SuccessState<bool>) {
+            Navigator.of(context).popAndPushNamed(ShaRoutes.homePageRoute);
+          } else if (state is FailureState) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text((state.error as UiError).message),
+                backgroundColor: theme.colorScheme.error,
+              ),
+            );
+          }
+        },
+        child: BlocBuilder<LoginCubit, UIState>(
+          builder: (context, state) {
+            if (state is LoadingState) {
+              return Container(
+                width: double.infinity,
+                alignment: Alignment.center,
+                padding: const EdgeInsets.all(8),
+                child: const CircularProgressIndicator(),
+              );
+            } else {
+              return Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  SignInButton(
+                    Buttons.Google,
+                    onPressed: () {
+                      context.read<LoginCubit>().signInWithGoogle();
+                    },
+                  ),
+                  if (Platform.isIOS)
+                    SignInButton(
+                      Buttons.Apple,
+                      onPressed: () {},
+                    ),
+                ],
+              );
+            }
+          },
         ),
       ),
     );
@@ -122,19 +170,7 @@ class _LoginPageState extends State<LoginPage> {
               ),
               const SizedBox(height: 40),
               _buildCarousel(),
-              SignInButton(
-                Buttons.Google,
-                onPressed: () {
-                  AuthService().signInWithGoogle().then((value) {
-                    debugPrint('userName => ${value?.user?.displayName}');
-                  });
-                },
-              ),
-              if (Platform.isIOS)
-                SignInButton(
-                  Buttons.Apple,
-                  onPressed: () {},
-                ),
+              _buildLoginButtons(context),
               const SizedBox(height: 40),
               _buildTnC(),
             ],

@@ -1,5 +1,6 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:sha/auth/auth_service.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:sha/route/routes.dart';
 import 'package:sha/ui/views/drawer_homes_section.dart';
 import 'package:sha/ui/views/drawer_item.dart';
@@ -73,7 +74,8 @@ class HomePageDrawer extends StatelessWidget {
                 title: 'Logout',
                 iconData: Icons.logout,
                 onClick: () {
-                  AuthService().signOut();
+                  FirebaseAuth.instance.signOut();
+                  GoogleSignIn().signOut();
                   Navigator.of(context).pushNamedAndRemoveUntil(
                     ShaRoutes.loginPageRoute,
                     (route) => route.settings.name == ShaRoutes.splashRoute,
