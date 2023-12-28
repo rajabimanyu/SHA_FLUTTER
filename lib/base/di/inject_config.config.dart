@@ -9,28 +9,38 @@
 // coverage:ignore-file
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:get_it/get_it.dart' as _i1;
-import 'package:injectable/injectable.dart' as _i2;
+import 'package:get_it/get_it.dart';
+import 'package:injectable/injectable.dart';
+import 'package:sha/data/network/repository/environments_repository.dart';
+import 'package:sha/data/network/repository/environments_repository_impl.dart';
+import 'package:sha/data/network/repository/surroundings_repository.dart';
+import 'package:sha/data/network/repository/surroundings_repository_impl.dart';
 
-import '../../data/network/repository/auth_repository.dart' as _i4;
-import '../../data/network/repository/auth_repository_impl.dart' as _i5;
-import '../../data/network/service/api_service.dart' as _i3;
+import '../../data/network/repository/auth_repository.dart';
+import '../../data/network/repository/auth_repository_impl.dart';
+import '../../data/network/repository/auth_repository.dart';
+import '../../data/network/repository/auth_repository_impl.dart';
+import '../../data/network/service/api_service.dart';
 
 // ignore_for_file: unnecessary_lambdas
 // ignore_for_file: lines_longer_than_80_chars
 // initializes the registration of main-scope dependencies inside of GetIt
-_i1.GetIt $initGetIt(
-  _i1.GetIt getIt, {
+GetIt $initGetIt(
+  GetIt getIt, {
   String? environment,
-  _i2.EnvironmentFilter? environmentFilter,
+  EnvironmentFilter? environmentFilter,
 }) {
-  final gh = _i2.GetItHelper(
+  final gh = GetItHelper(
     getIt,
     environment,
     environmentFilter,
   );
-  gh.factory<_i3.ApiService>(() => _i3.ApiService());
-  gh.factory<_i4.AuthRepository>(
-      () => _i5.AuthRepositoryImpl(gh<_i3.ApiService>()));
+  gh.factory<ApiService>(() => ApiService());
+  gh.factory<AuthRepository>(
+      () => AuthRepositoryImpl(gh<ApiService>()));
+  gh.factory<EnvironmentsRepository>(
+          () => EnvironmentsRepositoryImpl(gh<ApiService>()));
+  gh.factory<SurroundingsRepository>(
+          () => SurroundingsRepositoryImpl(gh<ApiService>()));
   return getIt;
 }

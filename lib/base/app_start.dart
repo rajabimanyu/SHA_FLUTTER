@@ -3,6 +3,8 @@ import 'dart:collection';
 
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:hive/hive.dart';
+import 'package:hive_flutter/adapters.dart';
 import 'package:sha/base/di/app_component.dart';
 import 'package:sha/base/my_app.dart';
 import 'package:sha/base/resolver/app_resolver.dart';
@@ -18,6 +20,8 @@ abstract class AppStart {
   const AppStart();
 
   Future<void> startApp() async {
+    await Hive.initFlutter();
+
     final injections = <InjectionModule>[];
 
     final Map<String, ShaPageRoute Function(RouteSettings settings)> routesMap =

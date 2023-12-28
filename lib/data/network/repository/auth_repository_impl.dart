@@ -3,6 +3,7 @@ import 'package:sha/core/network/network_error.dart';
 import 'package:sha/core/network/response.dart';
 import 'package:sha/data/network/repository/auth_repository.dart';
 import 'package:sha/data/network/service/api_service.dart';
+import 'package:sha/models/user.dart';
 
 @Injectable(as: AuthRepository)
 class AuthRepositoryImpl implements AuthRepository {
@@ -11,7 +12,7 @@ class AuthRepositoryImpl implements AuthRepository {
   AuthRepositoryImpl(this._service);
 
   @override
-  Future<ApiResponse<bool, NetworkError>> loginUser() async {
+  Future<ApiResponse<User, NetworkError>> loginUser() async {
     return _service.loginUser();
   }
 }

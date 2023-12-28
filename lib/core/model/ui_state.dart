@@ -44,3 +44,31 @@ class UiError<T> extends Error{
     this.data,
   });
 }
+
+class UserError extends Error{
+  final LoginErrorType data;
+  final String message;
+
+  UserError({
+    required this.message,
+    required this.data,
+  });
+}
+
+class DataError extends Error{
+  final DataErrorType dataErrorType;
+  final String message;
+
+  DataError({
+    required this.message,
+    required this.dataErrorType
+  });
+}
+
+enum DataErrorType {
+  ENV_NOT_AVAILABLE
+}
+
+enum LoginErrorType {
+  LOGIN_FAILED
+}

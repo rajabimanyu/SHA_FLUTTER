@@ -1,7 +1,7 @@
 class User {
-  final String uuid;
+  final String sessionId;
   final String name;
   final String email;
 
-  User({required this.uuid, required this.name, required this.email});
+  const User({required this.sessionId, required this.name, required this.email});
 }

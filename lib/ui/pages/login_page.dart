@@ -11,6 +11,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:kt_dart/collection.dart';
 import 'package:sha/base/di/inject_config.dart';
 import 'package:sha/core/model/ui_state.dart';
+import 'package:sha/models/user.dart';
 import 'package:sha/route/routes.dart';
 import 'package:sha/ui/cubit/login_cubit.dart';
 import 'package:sizer/sizer.dart';
@@ -95,10 +96,10 @@ class _LoginPageState extends State<LoginPage> {
   Widget _buildLoginButtons(BuildContext context) {
     final theme = Theme.of(context);
     return BlocProvider(
-      create: (_) => LoginCubit(getIt.get()),
+      create: (_) => LoginCubit(getIt.get(), getIt.get()),
       child: BlocListener<LoginCubit, UIState>(
         listener: (context, state) {
-          if (state is SuccessState<bool>) {
+          if (state is SuccessState<User> && state.data.email.isNotEmpty) {
             Navigator.of(context).popAndPushNamed(ShaRoutes.homePageRoute);
           } else if (state is FailureState) {
             ScaffoldMessenger.of(context).showSnackBar(
@@ -125,6 +126,7 @@ class _LoginPageState extends State<LoginPage> {
                   SignInButton(
                     Buttons.Google,
                     onPressed: () {
+                      print("signin pressed");
                       context.read<LoginCubit>().signInWithGoogle();
                     },
                   ),

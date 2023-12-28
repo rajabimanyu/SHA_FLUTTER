@@ -1,13 +1,15 @@
 import 'package:sha/models/device.dart';
 
 class Surrounding {
-  final String uuid;
+  final String id;
   final String name;
-  final List<Device> devices;
 
   Surrounding({
-    required this.uuid,
+    required this.id,
     required this.name,
-    this.devices = const [],
   });
+
+  factory Surrounding.fromJson(Map<String, dynamic> parsedJson) {
+    return Surrounding(id: parsedJson['id'], name: parsedJson['name']);
+  }
 }
