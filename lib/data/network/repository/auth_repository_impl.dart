@@ -10,9 +10,4 @@ class AuthRepositoryImpl implements AuthRepository {
   final ApiService _service;
 
   AuthRepositoryImpl(this._service);
-
-  @override
-  Future<ApiResponse<User, NetworkError>> loginUser() async {
-    return _service.loginUser();
-  }
 }

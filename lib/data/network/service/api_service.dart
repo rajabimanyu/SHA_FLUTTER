@@ -14,20 +14,15 @@ import 'package:sha/models/user.dart';
 class ApiService {
   final ApiClient _apiClient = AppInjector.I.get();
   final Logger _logger = AppInjector.I.get();
-  final String _baseUrl = '';
+  final String _baseUrl = 'http://127.0.0.1:8080';
   final _defaultError = const NetworkError(message: 'Some error occurred!');
-
-  Future<ApiResponse<User, NetworkError>> loginUser() async {
-    await Future.delayed(const Duration(seconds: 1));
-    return const ApiResponse.completed(User(sessionId: "sample_session", name: "raj abimanyu", email: "rajabimanyu1@gmail.com"));
-  }
 
   Future<ApiResponse<List<String>, NetworkError>> getEnvList() async {
     final url = '$_baseUrl/environments';
     try {
       await MockResponseData.mockApiDelay();
-      // final result = await _apiClient.get(url);
-      final List<String> result = (jsonDecode(MockResponseData.getEnvListResponse) as List<dynamic>).cast<String>();
+      final result = await _apiClient.get(url);
+      // final List<String> result = (jsonDecode(MockResponseData.getEnvListResponse) as List<dynamic>).cast<String>();
       return ApiResponse.completed(result);
     } catch (e) {
       return ApiResponse.error(_defaultError);

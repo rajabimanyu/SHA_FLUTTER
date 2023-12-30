@@ -1,7 +1,7 @@
-class User {
+class UserObject {
   final String sessionId;
   final String name;
   final String email;
 
-  const User({required this.sessionId, required this.name, required this.email});
+  const UserObject({required this.sessionId, required this.name, required this.email});
 }

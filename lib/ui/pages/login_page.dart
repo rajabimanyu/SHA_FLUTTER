@@ -99,7 +99,7 @@ class _LoginPageState extends State<LoginPage> {
       create: (_) => LoginCubit(getIt.get(), getIt.get()),
       child: BlocListener<LoginCubit, UIState>(
         listener: (context, state) {
-          if (state is SuccessState<User> && state.data.email.isNotEmpty) {
+          if (state is SuccessState<UserObject> && state.data.email.isNotEmpty) {
             Navigator.of(context).popAndPushNamed(ShaRoutes.homePageRoute);
           } else if (state is FailureState) {
             ScaffoldMessenger.of(context).showSnackBar(

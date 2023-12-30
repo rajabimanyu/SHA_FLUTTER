@@ -3,5 +3,4 @@ import 'package:sha/core/network/response.dart';
 import 'package:sha/models/user.dart';
 
 abstract class AuthRepository {
-  Future<ApiResponse<User, NetworkError>> loginUser();
 }

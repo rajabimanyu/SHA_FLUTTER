@@ -1,6 +1,9 @@
+import 'dart:developer';
+
 import 'package:dio/dio.dart';
 import 'package:pretty_dio_logger/pretty_dio_logger.dart';
 import 'package:sha/core/network/network_constants.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class ApiClient {
   final Dio _dio = Dio();
@@ -28,6 +31,11 @@ class ApiClient {
     ApiOptions? options,
   }) async {
     try {
+      String? sessionKey = await getSession();
+      if(sessionKey != null) {
+        options?.headers?['Authorization'] = 'Bearer $sessionKey';
+      }
+      log('api service : ${options?.headers}');
       final Response response = await _dio.get(
         url,
         queryParameters: queryParameters,
@@ -48,6 +56,10 @@ class ApiClient {
     ApiOptions? options,
   }) async {
     try {
+      String? sessionKey = await getSession();
+      if(sessionKey != null) {
+        options?.headers?['Authorization'] = 'Bearer $sessionKey';
+      }
       final Response response = await _dio.post(
         uri,
         data: data,
@@ -68,6 +80,10 @@ class ApiClient {
     ApiOptions? options,
   }) async {
     try {
+      String? sessionKey = await getSession();
+      if(sessionKey != null) {
+        options?.headers?['Authorization'] = 'Bearer $sessionKey';
+      }
       final Response response = await _dio.put(
         uri,
         data: data,
@@ -88,6 +104,10 @@ class ApiClient {
     ApiOptions? options,
   }) async {
     try {
+      String? sessionKey = await getSession();
+      if(sessionKey != null) {
+        options?.headers?['Authorization'] = 'Bearer $sessionKey';
+      }
       final Response response = await _dio.patch(
         uri,
         data: data,
@@ -119,10 +139,15 @@ class ApiClient {
       rethrow;
     }
   }
+
+  Future<String?> getSession() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    return prefs.getString('session_id');
+  }
 }
 
 class ApiOptions {
-  Map<String, dynamic>? headers;
+  Map<String, String>? headers;
   ResponseType? responseType;
 
   ApiOptions({
