@@ -4,16 +4,12 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:sha/core/model/ui_state.dart';
-import 'package:sha/data/network/repository/auth_repository.dart';
-import 'package:sha/data/network/repository/environments_repository.dart';
 import 'package:sha/models/user.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-class LoginCubit extends Cubit<UIState> {
-  final AuthRepository _authRepository;
-  final EnvironmentsRepository _environmentsRespository;
 
-  LoginCubit(this._authRepository, this._environmentsRespository) : super(InitialState());
+class LoginCubit extends Cubit<UIState> {
+  LoginCubit() : super(InitialState());
 
   void signInWithGoogle() async {
     emit(LoadingState());

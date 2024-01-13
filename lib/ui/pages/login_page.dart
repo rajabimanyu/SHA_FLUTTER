@@ -96,7 +96,7 @@ class _LoginPageState extends State<LoginPage> {
   Widget _buildLoginButtons(BuildContext context) {
     final theme = Theme.of(context);
     return BlocProvider(
-      create: (_) => LoginCubit(getIt.get(), getIt.get()),
+      create: (_) => LoginCubit(),
       child: BlocListener<LoginCubit, UIState>(
         listener: (context, state) {
           if (state is SuccessState<UserObject> && state.data.email.isNotEmpty) {

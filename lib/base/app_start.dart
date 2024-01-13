@@ -22,10 +22,6 @@ abstract class AppStart {
   const AppStart();
 
   Future<void> startApp() async {
-    await Hive.initFlutter();
-    Hive.registerAdapter(EnvironmentAdapter());
-    Hive.registerAdapter(SurroundingAdapter());
-
     final injections = <InjectionModule>[];
 
     final Map<String, ShaPageRoute Function(RouteSettings settings)> routesMap =
@@ -49,6 +45,9 @@ abstract class AppStart {
       () async {
         WidgetsFlutterBinding.ensureInitialized();
         _initFirebase();
+        await Hive.initFlutter();
+        Hive.registerAdapter(EnvironmentAdapter());
+        Hive.registerAdapter(SurroundingAdapter());
         runApp(
           MyApp(routeHandler: routeHandler),
         );

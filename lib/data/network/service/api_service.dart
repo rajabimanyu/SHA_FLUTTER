@@ -24,7 +24,8 @@ class ApiService {
     try {
       await MockResponseData.mockApiDelay();
       // final result = await _apiClient.get(url);
-      final List<env.Environment> result = (jsonDecode(MockResponseData.getEnvListResponse) as List<dynamic>).cast<env.Environment>();
+      var jsonResponse = jsonDecode(MockResponseData.getEnvListResponse);
+      final List<env.Environment> result = (jsonResponse as List).map((e) => env.Environment.fromJson(e)).toList();
       return ApiResponse.completed(result);
     } catch (e) {
       return ApiResponse.error(_defaultError);

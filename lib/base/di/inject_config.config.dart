@@ -12,12 +12,10 @@ import 'package:get_it/get_it.dart' as _i1;
 import 'package:injectable/injectable.dart' as _i2;
 
 import '../../data/network/service/api_service.dart' as _i3;
-import '../../data/repository/auth_repository.dart' as _i4;
-import '../../data/repository/auth_repository_impl.dart' as _i5;
-import '../../data/repository/environments_repository.dart' as _i6;
-import '../../data/repository/environments_repository_impl.dart' as _i7;
-import '../../data/repository/surroundings_repository.dart' as _i8;
-import '../../data/repository/surroundings_repository_impl.dart' as _i9;
+import '../../data/repository/environments_repository.dart' as _i4;
+import '../../data/repository/environments_repository_impl.dart' as _i5;
+import '../../data/repository/surroundings_repository.dart' as _i6;
+import '../../data/repository/surroundings_repository_impl.dart' as _i7;
 
 // initializes the registration of main-scope dependencies inside of GetIt
 _i1.GetIt $initGetIt(
@@ -31,11 +29,9 @@ _i1.GetIt $initGetIt(
     environmentFilter,
   );
   gh.factory<_i3.ApiService>(() => _i3.ApiService());
-  gh.factory<_i4.AuthRepository>(
-      () => _i5.AuthRepositoryImpl(gh<_i3.ApiService>()));
-  gh.factory<_i6.EnvironmentsRepository>(
-      () => _i7.EnvironmentsRepositoryImpl(gh<_i3.ApiService>()));
-  gh.factory<_i8.SurroundingsRepository>(
-      () => _i9.SurroundingsRepositoryImpl(gh<_i3.ApiService>()));
+  gh.factory<_i4.EnvironmentsRepository>(
+      () => _i5.EnvironmentsRepositoryImpl(gh<_i3.ApiService>()));
+  gh.factory<_i6.SurroundingsRepository>(
+      () => _i7.SurroundingsRepositoryImpl(gh<_i3.ApiService>()));
   return getIt;
 }

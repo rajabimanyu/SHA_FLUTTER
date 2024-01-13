@@ -8,7 +8,7 @@ part of 'surrounding.dart';
 
 class SurroundingAdapter extends TypeAdapter<Surrounding> {
   @override
-  final int typeId = 0;
+  final int typeId = 1;
 
   @override
   Surrounding read(BinaryReader reader) {
