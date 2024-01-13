@@ -1,6 +1,8 @@
+import 'dart:collection';
 import 'dart:developer';
 
 import 'package:dio/dio.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:pretty_dio_logger/pretty_dio_logger.dart';
 import 'package:sha/core/network/network_constants.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -27,23 +29,33 @@ class ApiClient {
   // Get:-----------------------------------------------------------------------
   Future<dynamic> get(
     String url, {
-    Map<String, dynamic>? queryParameters,
-    ApiOptions? options,
+    Map<String, dynamic>? queryParameters
   }) async {
     try {
-      String? sessionKey = await getSession();
-      if(sessionKey != null) {
-        options?.headers?['Authorization'] = 'Bearer $sessionKey';
+      log("get call");
+      final user = FirebaseAuth.instance.currentUser;
+      final IdTokenResult? idTokenResult = await user?.getIdTokenResult();
+      String? idToken = idTokenResult?.token ?? '';
+
+      log('get call : $idToken');
+      ApiOptions apiOptions = ApiOptions();
+      apiOptions.headers = HashMap<String, dynamic>();
+      if(idToken != null) {
+        log("get call sessionKey");
+        apiOptions.headers?['Authorization'] = 'Bearer $idToken';
       }
-      log('api service : ${options?.headers}');
+      log('api service : ${apiOptions.headers}');
       final Response response = await _dio.get(
         url,
         queryParameters: queryParameters,
         options: Options(
-            headers: options?.headers, responseType: options?.responseType),
+            headers: {"Authorization":"Bearer $idToken"}, responseType: apiOptions.responseType),
       );
+      log('responjse : ${response.data}');
       return response.data;
-    } catch (e) {
+    } catch (e, stackTrace) {
+      log("dio err : ${stackTrace.toString()}");
+      log("dio err : ${e.toString()}");
       rethrow;
     }
   }
@@ -142,16 +154,18 @@ class ApiClient {
 
   Future<String?> getSession() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    return prefs.getString('session_id');
+    String? sessionId = prefs.getString('session_id');
+    log("session = $sessionId");
+    return sessionId;
   }
 }
 
 class ApiOptions {
-  Map<String, String>? headers;
+  Map<String, dynamic>? headers;
   ResponseType? responseType;
 
   ApiOptions({
     this.headers,
-    this.responseType,
+    this.responseType = ResponseType.json,
   });
 }

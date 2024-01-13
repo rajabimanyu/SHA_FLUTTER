@@ -1,4 +1,4 @@
-import 'package:sha/models/surrounding.dart';
+import 'package:sha/data/network/service/models/surrounding.dart';
 
 import '../../../core/network/network_error.dart';
 import '../../../core/network/response.dart';

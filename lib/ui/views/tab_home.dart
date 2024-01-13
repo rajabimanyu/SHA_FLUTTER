@@ -6,7 +6,7 @@ import 'package:flutter/widgets.dart';
 import 'package:sha/ui/views/surrounding.dart';
 
 import '../../core/model/ui_state.dart';
-import '../../models/surrounding.dart';
+import '../../data/network/service/models/surrounding.dart';
 import 'home_page_drawer.dart';
 
 class TabHome extends StatefulWidget {

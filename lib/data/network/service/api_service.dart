@@ -1,3 +1,4 @@
+import 'dart:collection';
 import 'dart:convert';
 
 import 'package:injectable/injectable.dart';
@@ -7,7 +8,8 @@ import 'package:sha/core/network/api_services.dart';
 import 'package:sha/core/network/network_error.dart';
 import 'package:sha/core/network/response.dart';
 import 'package:sha/data/network/service/mock_response_data.dart';
-import 'package:sha/models/surrounding.dart';
+import 'package:sha/data/network/service/models/Environment.dart' as env;
+import 'package:sha/data/network/service/models/surrounding.dart';
 import 'package:sha/models/user.dart';
 
 @injectable
@@ -17,12 +19,12 @@ class ApiService {
   final String _baseUrl = 'http://127.0.0.1:8080';
   final _defaultError = const NetworkError(message: 'Some error occurred!');
 
-  Future<ApiResponse<List<String>, NetworkError>> getEnvList() async {
+  Future<ApiResponse<List<env.Environment>, NetworkError>> getEnvList() async {
     final url = '$_baseUrl/environments';
     try {
       await MockResponseData.mockApiDelay();
-      final result = await _apiClient.get(url);
-      // final List<String> result = (jsonDecode(MockResponseData.getEnvListResponse) as List<dynamic>).cast<String>();
+      // final result = await _apiClient.get(url);
+      final List<env.Environment> result = (jsonDecode(MockResponseData.getEnvListResponse) as List<dynamic>).cast<env.Environment>();
       return ApiResponse.completed(result);
     } catch (e) {
       return ApiResponse.error(_defaultError);
@@ -34,12 +36,9 @@ class ApiService {
     try {
       await MockResponseData.mockApiDelay();
       // final result = await _apiClient.get(url);
-
       var jsonResponse = jsonDecode(MockResponseData.fetchSurroundingsListResponse);
 
-      final List<Surrounding> result =
-      (jsonResponse as List).map((e) => Surrounding.fromJson(e)).toList();
-
+      final List<Surrounding> result = (jsonResponse as List).map((e) => Surrounding.fromJson(e)).toList();
       return ApiResponse.completed(result);
     } catch (e) {
       return ApiResponse.error(_defaultError);

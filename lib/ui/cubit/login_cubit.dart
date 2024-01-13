@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_sign_in/google_sign_in.dart';
@@ -36,21 +38,29 @@ class LoginCubit extends Cubit<UIState> {
       final userName = user.displayName ?? '';
       final email = user.email ?? '';
       final token = user.uid;
-      loginUser(userName: userName, email: email, token: token);
+      // IdTokenResult idTokenResult = await user.getIdTokenResult(true);
+      // String? id = idTokenResult.token;
+      // log("logged in $token : $id");
+      loginUser(userName: userName, email: email, token: token,id: "id");
     }
   }
 
-  Future<bool> storeSession(String sessionKey) async {
+  Future<bool> storeSession(String? sessionKey) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    return await prefs.setString('session_id', sessionKey);
+    if(sessionKey != null) {
+      return await prefs.setString('session_id', sessionKey);
+    } else {
+      return Future.value(false);
+    }
   }
 
   void loginUser({
     required String userName,
     required String email,
     required String token,
+    required String? id
   }) async {
-    final bool isSaved = await storeSession(token);
+    final bool isSaved = await storeSession(id);
     if (isSaved) {
       emit(SuccessState(
           UserObject(sessionId: token, name: userName, email: email)));

@@ -6,7 +6,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sha/base/di/inject_config.dart';
 import 'package:sha/core/model/ui_state.dart';
 import 'package:sha/models/environment.dart';
-import 'package:sha/models/surrounding.dart';
+import 'package:sha/data/network/service/models/surrounding.dart';
 import 'package:sha/route/routes.dart';
 import 'package:sha/ui/cubit/HomeCubit.dart';
 import 'package:sha/ui/views/home_page_drawer.dart';

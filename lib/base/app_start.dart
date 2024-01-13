@@ -13,6 +13,8 @@ import 'package:sha/core/feature_resolver.dart';
 import 'package:sha/core/route/router_module.dart';
 import 'package:sha/core/route/sha_page_route_handler.dart';
 import 'package:sha/firebase_options.dart';
+import 'package:sha/models/environment.dart';
+import 'package:sha/models/surrounding.dart';
 
 abstract class AppStart {
   final resolvers = const <FeatureResolver>[AppResolver()];
@@ -21,6 +23,8 @@ abstract class AppStart {
 
   Future<void> startApp() async {
     await Hive.initFlutter();
+    Hive.registerAdapter(EnvironmentAdapter());
+    Hive.registerAdapter(SurroundingAdapter());
 
     final injections = <InjectionModule>[];
 

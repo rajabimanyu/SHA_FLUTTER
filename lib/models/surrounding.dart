@@ -1,15 +1,16 @@
-import 'package:sha/models/device.dart';
+import 'package:hive/hive.dart';
+part 'surrounding.g.dart';
 
+@HiveType(typeId: 0)
 class Surrounding {
-  final String id;
-  final String name;
-
   Surrounding({
-    required this.id,
-    required this.name,
+    required this.uuid,
+    required this.name
   });
 
-  factory Surrounding.fromJson(Map<String, dynamic> parsedJson) {
-    return Surrounding(id: parsedJson['id'], name: parsedJson['name']);
-  }
+  @HiveField(0)
+  final String uuid;
+
+  @HiveField(1)
+  final String name;
 }

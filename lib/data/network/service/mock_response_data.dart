@@ -7,16 +7,26 @@ class MockResponseData {
 
   static const getEnvListResponse = '''
   [
-    "environmentc2e0e555-9573-468a-9c7f-a866c3cfd430",
-    "environmenta4062f2b-3686-4783-8921-e64067a36128",
-    "environment9e6429d1-6c99-459f-8761-9663345b326a",
-    "environment68abd4c0-760e-42d8-a7d2-08cfe08e0dbe",
-    "environment63c66138-2105-4f29-b1d4-6f12ae1c051d",
-    "environment5bdfec6a-de53-40c2-b44f-733f9dee7e32",
-    "environment24fd26d5-5206-4ae8-b3cf-2a21fcbd2d90",
-    "environment24f3f967-b7ad-4c07-b175-28d568c18615",
-    "environment2408a172-4c79-46fd-aaa3-3afe567cce54",
-    "environment1d4cdaa1-39f0-413e-abce-450f68bdb29a"
+    {
+        "id": "environmentc2e0e555-9573-468a-9c7f-a866c3cfd430",
+        "name": "bedroom"
+    },
+  {
+        "id": "environmenta4062f2b-3686-4783-8921-e64067a36128",
+        "name": "kitchen"
+    },
+  {
+        "id": "environment9e6429d1-6c99-459f-8761-9663345b326a",
+        "name": "living room"
+    },
+  {
+        "id": "environment68abd4c0-760e-42d8-a7d2-08cfe08e0dbe",
+        "name": "master bedroom"
+    },
+  {
+        "id": "environment63c66138-2105-4f29-b1d4-6f12ae1c051d",
+        "name": "balcony"
+    }
   ]''';
 
   static const fetchSurroundingsListResponse = '''
