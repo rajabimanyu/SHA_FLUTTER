@@ -8,6 +8,7 @@ import 'package:sha/core/network/api_services.dart';
 import 'package:sha/core/network/network_error.dart';
 import 'package:sha/core/network/response.dart';
 import 'package:sha/data/network/service/mock_response_data.dart';
+import 'package:sha/data/network/service/models/Device.dart';
 import 'package:sha/data/network/service/models/Environment.dart' as env;
 import 'package:sha/data/network/service/models/surrounding.dart';
 import 'package:sha/models/user.dart';
@@ -40,6 +41,20 @@ class ApiService {
       var jsonResponse = jsonDecode(MockResponseData.fetchSurroundingsListResponse);
 
       final List<Surrounding> result = (jsonResponse as List).map((e) => Surrounding.fromJson(e)).toList();
+      return ApiResponse.completed(result);
+    } catch (e) {
+      return ApiResponse.error(_defaultError);
+    }
+  }
+
+  Future<ApiResponse<List<Device>, NetworkError>> fetchDevices(String surroundingId) async {
+    final url = '$_baseUrl/devices';
+    try {
+      await MockResponseData.mockApiDelay();
+      // final result = await _apiClient.get(url);
+      var jsonResponse = jsonDecode(MockResponseData.fetchSurroundingsListResponse);
+
+      final List<Device> result = (jsonResponse as List).map((e) => Device.fromJson(e)).toList();
       return ApiResponse.completed(result);
     } catch (e) {
       return ApiResponse.error(_defaultError);

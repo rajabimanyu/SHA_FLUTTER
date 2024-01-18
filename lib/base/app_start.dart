@@ -13,8 +13,10 @@ import 'package:sha/core/feature_resolver.dart';
 import 'package:sha/core/route/router_module.dart';
 import 'package:sha/core/route/sha_page_route_handler.dart';
 import 'package:sha/firebase_options.dart';
+import 'package:sha/models/device.dart';
 import 'package:sha/models/environment.dart';
 import 'package:sha/models/surrounding.dart';
+import 'package:sha/models/thing.dart';
 
 abstract class AppStart {
   final resolvers = const <FeatureResolver>[AppResolver()];
@@ -48,6 +50,8 @@ abstract class AppStart {
         await Hive.initFlutter();
         Hive.registerAdapter(EnvironmentAdapter());
         Hive.registerAdapter(SurroundingAdapter());
+        Hive.registerAdapter(ThingAdapter());
+        Hive.registerAdapter(DeviceAdapter());
         runApp(
           MyApp(routeHandler: routeHandler),
         );

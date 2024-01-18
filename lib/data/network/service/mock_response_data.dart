@@ -69,12 +69,7 @@ class MockResponseData {
     }
 ]''';
 
-  static const getEnvFromUuid = '''
-  {
-    "id": "environmentcaaaf161-f51c-450d-b07a-41e28f733d95",
-    "name": "10"
-  }
-  ''';
+
 
 
 }
