@@ -11,9 +11,12 @@ import 'package:sha/data/repository/environments_repository.dart';
 import 'package:sha/core/network/network_error.dart';
 import 'package:sha/core/network/response.dart';
 import 'package:sha/data/network/service/api_service.dart';
-import 'package:sha/data/network/service/models/Environment.dart' as env;
+import 'package:sha/data/network/service/models/Device.dart' as device;
+import'package:sha/data/network/service/models/Environment.dart' as env;
 import 'package:sha/models/environment.dart' as envDBModel;
 import 'package:sha/models/surrounding.dart' as surroundingDBModel;
+import 'package:sha/models/device.dart' as deviceDBModel;
+import 'package:sha/models/thing.dart' as thingDBModel;
 
 import '../../base/ShaConstants.dart';
 import '../../models/device.dart';
@@ -102,8 +105,36 @@ class EnvironmentsRepositoryImpl implements EnvironmentsRepository {
   }
 
   @override
-  Future<List<Device>> fetchDevices(String surroundingId) {
-    // TODO: implement fetchDevices
-    throw UnimplementedError();
+  Future<List<Device>> fetchDevices(String surroundingId) async {
+    try {
+      final ApiResponse<List<device.Device>, NetworkError> devicesResponse = await _service.fetchDevices(surroundingId);
+      Box devicesBox = await Hive.openBox(HIVE_DEVICES_BOX);
+      if(devicesResponse.success) {
+        final List<device.Device> devices = devicesResponse.data ?? List.empty(growable: false);
+        final List<deviceDBModel.Device> devicesDB = devices.map((e) => deviceDBModel.Device(
+            environmentID: e.environmentId,
+            surroundingID: e.surroundingId,
+            id: e.deviceId,
+            things: e.things.map((t) => thingDBModel.Thing(
+                environmentID: t.environmentId,
+                deviceID: t.deviceId,
+                id: t.id,
+                status: t.status,
+                thingType: t.thingType,
+                totalStep: t.totalStep,
+                currentStep: t.currentStep,
+                lastUpdatedTime: t.lastUpdatedTime
+            )).toList())
+        ).toList();
+        if(devicesDB.isNotEmpty) {
+          devicesBox.put(surroundingId, devicesDB);
+          return devicesDB;
+        }
+      }
+    } catch (e, stack) {
+      log('exception in devices fetch : $e');
+      print('$stack');
+    }
+    return List.empty(growable: false);
   }
 }

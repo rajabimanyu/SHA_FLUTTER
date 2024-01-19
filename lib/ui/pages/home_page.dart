@@ -56,7 +56,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
           child: BlocBuilder<HomeCubit, UIState>(builder: (context, state) {
             if(state is SuccessState) {
               log('Home Page bloc success');
-              return TabHome(state: state);
+              return TabHome(state: state, homeCubit: homeCubit);
             } else if(state is FailureState) {
               return Container(
                 width: double.infinity,

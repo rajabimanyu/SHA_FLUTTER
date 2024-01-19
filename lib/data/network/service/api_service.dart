@@ -52,13 +52,39 @@ class ApiService {
     try {
       await MockResponseData.mockApiDelay();
       // final result = await _apiClient.get(url);
-      var jsonResponse = jsonDecode(MockResponseData.fetchSurroundingsListResponse);
+
+      var jsonResponse = jsonDecode(_getDevices(surroundingId));
 
       final List<Device> result = (jsonResponse as List).map((e) => Device.fromJson(e)).toList();
       return ApiResponse.completed(result);
     } catch (e) {
       return ApiResponse.error(_defaultError);
     }
+  }
+
+  String _getDevices(String surroundingId) {
+    switch (surroundingId) {
+      case "surrounding1611f5eb-a9ee-410e-9cbe-7294111a6d25":
+        return MockResponseData.surroundingBedroom;
+      case "surrounding1611f5eb-a9ee-410e-9cbe-7294111a6d26":
+        return MockResponseData.surroundingKitchen;
+      case "surrounding1611f5eb-a9ee-410e-9cbe-7294111a6d27":
+        return MockResponseData.surroundingLiving;
+      case "surrounding1611f5eb-a9ee-410e-9cbe-7294111a6d28":
+        return MockResponseData.surroundingMaster;
+      case "surrounding1611f5eb-a9ee-410e-9cbe-7294111a6d29":
+        return MockResponseData.surroundingBalcony;
+      case "surrounding1611f5eb-a9ee-410e-9cbe-7294111a6d30":
+        return MockResponseData.surroundingStore;
+      case "surrounding1611f5eb-a9ee-410e-9cbe-7294111a6d31":
+        return MockResponseData.surroundingWaiting;
+      case "surrounding1611f5eb-a9ee-410e-9cbe-7294111a6d32":
+        return MockResponseData.surroundingBedFirst;
+      case "surrounding1611f5eb-a9ee-410e-9cbe-7294111a6d33":
+        return MockResponseData.surroundingBathroom;
+    }
+    
+    return "";
   }
 
 

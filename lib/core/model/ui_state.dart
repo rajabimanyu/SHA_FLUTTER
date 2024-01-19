@@ -66,7 +66,8 @@ class DataError extends Error{
 }
 
 enum DataErrorType {
-  ENV_NOT_AVAILABLE
+  ENV_NOT_AVAILABLE,
+  DEVICES_NOT_AVAILABLE
 }
 
 enum LoginErrorType {

@@ -3,6 +3,7 @@ import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:sha/ui/cubit/HomeCubit.dart';
 import 'package:sha/ui/views/surrounding.dart';
 
 import '../../core/model/ui_state.dart';
@@ -11,7 +12,8 @@ import 'home_page_drawer.dart';
 
 class TabHome extends StatefulWidget {
   final UIState state;
-  const TabHome({Key? key, required this.state}) : super(key: key);
+  final HomeCubit homeCubit;
+  const TabHome({Key? key, required this.state, required this.homeCubit}) : super(key: key);
 
   @override
   State<TabHome> createState() => TabHomePageState();
@@ -54,36 +56,13 @@ class TabHomePageState extends State<TabHome> with TickerProviderStateMixin {
                   Tab(
                     text: surroundings[index].name,
                   ))
-            // const [
-            //   Tab(
-            //     text: 'Bed Room',
-            //   ),
-            //   Tab(
-            //     text: 'Living Room',
-            //   ),
-            //   Tab(
-            //     text: 'Dining Room',
-            //   ),
-            //   Tab(
-            //     text: 'Study',
-            //   ),
-            //   Tab(
-            //     text: 'Basement',
-            //   ),
-            //   Tab(
-            //     text: 'Terrace',
-            //   ),
-            //   Tab(
-            //     text: 'Porch',
-            //   ),
-            // ],
           ),
         ),
         drawer: const HomePageDrawer(),
         body: TabBarView(
           controller: tabController,
           children: List.generate(surroundings.length, (index) =>
-              SurroundingWidget(surrounding: surroundings[index])
+              SurroundingWidget(surrounding: surroundings[index], homeCubit: widget.homeCubit)
           ),
         ),
       ),

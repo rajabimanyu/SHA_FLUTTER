@@ -3,13 +3,20 @@ import 'dart:developer';
 import 'dart:ffi';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:sha/models/device.dart';
 import 'package:sha/models/surrounding.dart';
+import 'package:sha/ui/cubit/HomeCubit.dart';
 import 'package:sha/ui/views/fan_switch.dart';
 import 'package:sha/ui/views/toggle_switch.dart';
+import 'package:sizer/sizer.dart';
+
+import '../../core/model/ui_state.dart';
 
 class SurroundingWidget extends StatefulWidget {
   final Surrounding surrounding;
-  const SurroundingWidget({super.key, required this.surrounding});
+  final HomeCubit homeCubit;
+  const SurroundingWidget({super.key, required this.surrounding, required this.homeCubit});
 
   @override
   State<SurroundingWidget> createState() => _SurroundingWidgetState();
@@ -22,8 +29,8 @@ class _SurroundingWidgetState extends State<SurroundingWidget> {
   @override
   void initState() {
     super.initState();
-    log(widget.surrounding.name);
-    widget.surrounding;
+    log("surr : ${widget.surrounding.name}");
+    widget.homeCubit.fetchDeviceData(widget.surrounding.uuid);
   }
 
   void _toggleBulbState(bool isOn) async {
@@ -68,6 +75,41 @@ class _SurroundingWidgetState extends State<SurroundingWidget> {
 
   @override
   Widget build(BuildContext context) {
+    return BlocProvider(
+        create: (_) => widget.homeCubit,
+        child: BlocListener<HomeCubit, UIState>(
+          listener: (context, state) {
+            if ((state is SuccessState<List<Device>> && state.data.isEmpty) || (state is FailureState)) {
+              log('Homebloc devices empty: $state');
+            }
+          },
+          child: BlocBuilder<HomeCubit, UIState>(builder: (context, state) {
+            if(state is SuccessState) {
+              log('Devices bloc success');
+              return DevicesWidget();
+            } else if(state is FailureState) {
+              return Container(
+                width: double.infinity,
+                height: double.infinity,
+                alignment: Alignment.center,
+                child: Text(
+                  "Something went wrong. Please try again later.",
+                  style: TextStyle(fontSize: 11.sp),
+                ),
+              );
+            } else {
+              return Container(
+                width: double.infinity,
+                height: double.infinity,
+                alignment: Alignment.center,
+                child: const CircularProgressIndicator(),
+              );
+            }
+          }),
+        ));
+  }
+
+  Widget DevicesWidget() {
     return Center(
       child: Column(
         children: [
