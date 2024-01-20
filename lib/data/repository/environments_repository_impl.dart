@@ -1,6 +1,7 @@
 
 
 import 'dart:developer';
+import 'dart:ffi';
 
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:injectable/injectable.dart';
@@ -121,13 +122,13 @@ class EnvironmentsRepositoryImpl implements EnvironmentsRepository {
                 id: t.id,
                 status: t.status,
                 thingType: t.thingType,
-                totalStep: t.totalStep,
-                currentStep: t.currentStep,
+                totalStep: int.parse(t.totalStep),
+                currentStep: int.parse(t.currentStep),
                 lastUpdatedTime: t.lastUpdatedTime
             )).toList())
         ).toList();
         if(devicesDB.isNotEmpty) {
-          devicesBox.put(surroundingId, devicesDB);
+          await devicesBox.put(surroundingId, devicesDB);
           return devicesDB;
         }
       }

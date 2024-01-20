@@ -4,8 +4,8 @@ class Thing {
   final String deviceId;
   final String thingType;
   final String status;
-  final int totalStep;
-  final int currentStep;
+  final String totalStep;
+  final String currentStep;
   final String lastUpdatedTime;
   
   Thing({
@@ -21,6 +21,6 @@ class Thing {
   
   factory Thing.fromJson(Map<String, dynamic> parsedJson) {
     return Thing(environmentId: parsedJson['environmentID'], id: parsedJson['id'], deviceId: parsedJson['deviceID'], thingType: parsedJson['thingType'],
-        status: parsedJson['status'], totalStep: parsedJson['totalStep'], currentStep: parsedJson['currentStep'], lastUpdatedTime: parsedJson['lastUpdatedTime']);
+        status: parsedJson['status'], totalStep: parsedJson['totalStep'].toString(), currentStep: parsedJson['currentStep'].toString(), lastUpdatedTime: parsedJson['lastUpdatedTime'].toString());
   }
 }

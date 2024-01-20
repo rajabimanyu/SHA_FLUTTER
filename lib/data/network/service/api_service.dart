@@ -1,5 +1,6 @@
 import 'dart:collection';
 import 'dart:convert';
+import 'dart:developer';
 
 import 'package:injectable/injectable.dart';
 import 'package:logger/logger.dart';
@@ -28,7 +29,9 @@ class ApiService {
       var jsonResponse = jsonDecode(MockResponseData.getEnvListResponse);
       final List<env.Environment> result = (jsonResponse as List).map((e) => env.Environment.fromJson(e)).toList();
       return ApiResponse.completed(result);
-    } catch (e) {
+    } catch (e, stack) {
+      log('error in environments fetch : $e');
+      print('error in environments fetch stack : $stack');
       return ApiResponse.error(_defaultError);
     }
   }
@@ -42,7 +45,9 @@ class ApiService {
 
       final List<Surrounding> result = (jsonResponse as List).map((e) => Surrounding.fromJson(e)).toList();
       return ApiResponse.completed(result);
-    } catch (e) {
+    } catch (e, stack) {
+      log('error in surroundings fetch : $e');
+      print('error in surroundings fetch stack : $stack');
       return ApiResponse.error(_defaultError);
     }
   }
@@ -57,7 +62,9 @@ class ApiService {
 
       final List<Device> result = (jsonResponse as List).map((e) => Device.fromJson(e)).toList();
       return ApiResponse.completed(result);
-    } catch (e) {
+    } catch (e, stack) {
+      log('error in devices fetch : $e');
+      print('error in devices fetch stack : $stack');
       return ApiResponse.error(_defaultError);
     }
   }

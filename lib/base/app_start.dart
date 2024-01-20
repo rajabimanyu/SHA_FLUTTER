@@ -5,6 +5,8 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/adapters.dart';
+import 'package:sha/base/ShaConstants.dart';
+import 'package:sha/base/boxes.dart';
 import 'package:sha/base/di/app_component.dart';
 import 'package:sha/base/my_app.dart';
 import 'package:sha/base/resolver/app_resolver.dart';
@@ -52,6 +54,7 @@ abstract class AppStart {
         Hive.registerAdapter(SurroundingAdapter());
         Hive.registerAdapter(ThingAdapter());
         Hive.registerAdapter(DeviceAdapter());
+        deviceBox = await Hive.openBox(HIVE_DEVICES_BOX);
         runApp(
           MyApp(routeHandler: routeHandler),
         );

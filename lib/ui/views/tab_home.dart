@@ -62,7 +62,7 @@ class TabHomePageState extends State<TabHome> with TickerProviderStateMixin {
         body: TabBarView(
           controller: tabController,
           children: List.generate(surroundings.length, (index) =>
-              SurroundingWidget(surrounding: surroundings[index], homeCubit: widget.homeCubit)
+              SurroundingWidget(surrounding: surroundings[index])
           ),
         ),
       ),

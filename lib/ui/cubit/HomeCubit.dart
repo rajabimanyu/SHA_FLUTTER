@@ -30,14 +30,4 @@ class HomeCubit extends Cubit<UIState> {
       emit(FailureState(DataError(message: "No Data Found", dataErrorType: DataErrorType.ENV_NOT_AVAILABLE)));
     }
   }
-
-  void fetchDeviceData(String surroundingId) async {
-    emit(LoadingState());
-    final List<Device> devices = await _environmentsRespository.fetchDevices(surroundingId);
-    if(devices.isNotEmpty) {
-      emit(SuccessState(devices));
-    } else {
-      emit(FailureState(DataError(message: "No Devices Found", dataErrorType: DataErrorType.DEVICES_NOT_AVAILABLE)));
-    }
-  }
 }
