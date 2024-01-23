@@ -2,7 +2,7 @@ class MockResponseData {
   const MockResponseData._();
 
   static Future<void> mockApiDelay({int seconds = 2}) {
-    return Future.delayed(Duration(seconds: seconds));
+    return Future.delayed(Duration(milliseconds: 2500));
   }
 
   static const getEnvListResponse = '''
@@ -176,9 +176,7 @@ class MockResponseData {
       }
     ]
   }
-  ]
-}
-]''';
+  ]''';
 
   static const surroundingLiving = '''
   [
@@ -219,9 +217,7 @@ class MockResponseData {
       }
     ]
   }
-  ]
-}
-]''';
+  ]''';
 
 
   static const surroundingMaster = '''
@@ -273,9 +269,7 @@ class MockResponseData {
       }
     ]
   }
-  ]
-}
-]''';
+  ]''';
 
   static const surroundingBalcony = '''
   [
@@ -326,9 +320,7 @@ class MockResponseData {
       }
     ]
   }
-  ]
-}
-]''';
+  ]''';
 
   static const surroundingStore = '''
   [
@@ -379,9 +371,7 @@ class MockResponseData {
       }
     ]
   }
-  ]
-}
-]''';
+  ]''';
 
 
   static const surroundingWaiting = '''
@@ -443,9 +433,7 @@ class MockResponseData {
       }
     ]
   }
-  ]
-}
-]''';
+  ]''';
 
 
   static const surroundingBedFirst = '''
@@ -467,9 +455,7 @@ class MockResponseData {
       }
     ]
   }
-  ]
-}
-]''';
+  ]''';
 
   static const surroundingBathroom = '''
   [
@@ -490,7 +476,5 @@ class MockResponseData {
       }
     ]
   }
-  ]
-}
-]''';
+  ]''';
 }

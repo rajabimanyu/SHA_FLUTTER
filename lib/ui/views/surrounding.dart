@@ -10,11 +10,12 @@ import 'package:sha/base/boxes.dart';
 import 'package:sha/base/di/inject_config.dart';
 import 'package:sha/models/device.dart';
 import 'package:sha/models/surrounding.dart';
-import 'package:sha/ui/cubit/HomeCubit.dart';
+import 'package:sha/models/thing.dart';
 import 'package:sha/ui/cubit/devices_cubit.dart';
 import 'package:sha/ui/views/fan_switch.dart';
 import 'package:sha/ui/views/toggle_switch.dart';
 import 'package:sizer/sizer.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../base/ShaConstants.dart';
 import '../../core/model/ui_state.dart';
@@ -31,13 +32,95 @@ class _SurroundingWidgetState extends State<SurroundingWidget> {
   bool _isBulbOn = false;
   bool _isLoading = false;
   late DeviceCubit deviceCubit;
+  final List<Thing> things = List.empty(growable: true);
 
   @override
   void initState() {
     super.initState();
     log("surr : ${widget.surrounding.name}");
+    _initDevices();
     deviceCubit = DeviceCubit(getIt.get());
     deviceCubit.fetchDeviceData(widget.surrounding.uuid);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    deviceBox.watch(key: widget.surrounding.uuid).listen((event) {
+      log("events : ${event.value}");
+      final List<Device> devices = (event.value ?? List.empty(growable: true)).cast<Device>();
+      _setThings(devices);
+    });
+    return DevicesWidget();
+  }
+
+  Widget DevicesWidget() {
+    log("surrid : ${widget.surrounding.uuid}");
+        // final List<Device> devices = box.get(widget.surrounding.uuid);
+        log('surrid in wid : ${widget.surrounding.uuid}');
+        things.forEach((element) {
+          log("things : ${element.id}");
+        });
+        if(things.isNotEmpty) {
+          return ListView.builder(
+              itemCount: things.length,
+              itemBuilder: (BuildContext context, int position) {
+                return ToggleSwitch(
+                  deviceName: 'Bulb 1',
+                  isOn: _isBulbOn,
+                  isLoading: _isLoading,
+                  toggleSwitchType: Bulb(),
+                  onToggleSwitch: _toggleBulbState,
+                );
+              });
+        } else {
+          return Container(
+            width: double.infinity,
+            height: double.infinity,
+            alignment: Alignment.center,
+            child: const CircularProgressIndicator(),
+          );
+        }
+        // return Center(
+        //   child: Column(
+        //     children: [
+        //       ToggleSwitch(
+        //         deviceName: 'Bulb 1',
+        //         isOn: _isBulbOn,
+        //         isLoading: _isLoading,
+        //         toggleSwitchType: Bulb(),
+        //         onToggleSwitch: _toggleBulbState,
+        //       ),
+        //       const SizedBox(height: 24),
+        //       FanSwitch(
+        //         totalSteps: 5,
+        //         currentStep: _currentFanStep,
+        //         isOn: _isFanOn,
+        //         deviceName: 'Bedroom Fan',
+        //         isLoading: _isFanLoading,
+        //         onToggleSwitch: _toggleFanState,
+        //         changeStep: _changeFanStep,
+        //       ),
+        //     ],
+        //   ),
+        // );
+  }
+
+  void _initDevices() {
+    final List<Device> devicesFromDB = (deviceBox.get(widget.surrounding.uuid) ?? List.empty(growable: true)).cast<Device>();
+    _setThings(devicesFromDB);
+  }
+
+  void _setThings(List<Device> devices) {
+    final List<Thing> thingsFromDB = List.empty(growable: true);
+    for (var element in devices) {
+      thingsFromDB.addAll(element.things);
+    }
+    if (thingsFromDB.isNotEmpty) {
+      things.clear();
+      setState(() {
+        things.addAll(thingsFromDB);
+      });
+    }
   }
 
   void _toggleBulbState(bool isOn) async {
@@ -78,76 +161,5 @@ class _SurroundingWidgetState extends State<SurroundingWidget> {
         _currentFanStep = step;
       });
     });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return BlocProvider(
-        create: (_) => deviceCubit,
-        child: BlocListener<HomeCubit, UIState>(
-          listener: (context, state) {
-            if ((state is SuccessState<List<Device>> && state.data.isEmpty) || (state is FailureState)) {
-              log('Homebloc devices empty: $state');
-            }
-          },
-          child: BlocBuilder<HomeCubit, UIState>(builder: (context, state) {
-            if(state is SuccessState) {
-              log('Devices bloc success');
-              return DevicesWidget();
-            } else if(state is FailureState) {
-              return Container(
-                width: double.infinity,
-                height: double.infinity,
-                alignment: Alignment.center,
-                child: Text(
-                  "Something went wrong. Please try again later.",
-                  style: TextStyle(fontSize: 11.sp),
-                ),
-              );
-            } else {
-              return Container(
-                width: double.infinity,
-                height: double.infinity,
-                alignment: Alignment.center,
-                child: const CircularProgressIndicator(),
-              );
-            }
-          }),
-        ));
-  }
-
-  Widget DevicesWidget() {
-    return ValueListenableBuilder(
-      valueListenable: deviceBox.listenable(keys: [widget.surrounding.uuid]),
-      builder: (BuildContext context, box, Widget? child) {
-        // final List<Device> devices = box.get(widget.surrounding.uuid);
-        final List devices2 = box.values.toList();
-        // log("key $devices");
-        log("values from hive $devices2");
-        return Center(
-          child: Column(
-            children: [
-              ToggleSwitch(
-                deviceName: 'Bulb 1',
-                isOn: _isBulbOn,
-                isLoading: _isLoading,
-                toggleSwitchType: Bulb(),
-                onToggleSwitch: _toggleBulbState,
-              ),
-              const SizedBox(height: 24),
-              FanSwitch(
-                totalSteps: 5,
-                currentStep: _currentFanStep,
-                isOn: _isFanOn,
-                deviceName: 'Bedroom Fan',
-                isLoading: _isFanLoading,
-                onToggleSwitch: _toggleFanState,
-                changeStep: _changeFanStep,
-              ),
-            ],
-          ),
-        );
-      }
-    );
   }
 }
