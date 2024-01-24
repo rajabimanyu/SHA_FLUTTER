@@ -2,7 +2,7 @@ class MockResponseData {
   const MockResponseData._();
 
   static Future<void> mockApiDelay({int seconds = 2}) {
-    return Future.delayed(Duration(milliseconds: 2500));
+    return Future.delayed(Duration(milliseconds: 500));
   }
 
   static const getEnvListResponse = '''

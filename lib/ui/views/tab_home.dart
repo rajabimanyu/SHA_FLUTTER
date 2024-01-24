@@ -38,6 +38,7 @@ class TabHomePageState extends State<TabHome> with TickerProviderStateMixin {
   Widget tabbedHomePage(BuildContext context) {
     final theme = Theme.of(context);
     log('tab data : ');
+    final List<String> fetchedSurroundings = List.empty(growable: true);
     return DefaultTabController(
       initialIndex: 0,
       length: tabController.length,
@@ -62,7 +63,7 @@ class TabHomePageState extends State<TabHome> with TickerProviderStateMixin {
         body: TabBarView(
           controller: tabController,
           children: List.generate(surroundings.length, (index) =>
-              SurroundingWidget(surrounding: surroundings[index])
+              SurroundingWidget(surrounding: surroundings[index], fetchedSurroundings: fetchedSurroundings)
           ),
         ),
       ),

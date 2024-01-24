@@ -14,6 +14,8 @@ class BulbSwitch extends StatefulWidget {
 }
 
 class BulbSwitchState extends State<BulbSwitch> {
+  bool _isLoading = false;
+
   @override
   Widget build(BuildContext context) {
     IconData icon = widget.thing.status == "ON" ? Bulb.iconOn : Bulb.iconOff;
@@ -46,9 +48,11 @@ class BulbSwitchState extends State<BulbSwitch> {
                 width: 40,
                 child: FittedBox(
                   fit: BoxFit.scaleDown,
-                  child: isLoading
+                  child: _isLoading
                       ? const CircularProgressIndicator()
-                      : Switch(value: switchStatus, onChanged: onToggleSwitch),
+                      : Switch(value: switchStatus, onChanged: (bool value) {
+                        _setLoading(true);
+                  }),
                 ),
               ),
             ],
@@ -56,5 +60,11 @@ class BulbSwitchState extends State<BulbSwitch> {
         ),
       ),
     );
+  }
+
+  void _setLoading(bool isLoading) {
+    setState(() {
+      _isLoading = isLoading;
+    });
   }
 }

@@ -108,6 +108,7 @@ class EnvironmentsRepositoryImpl implements EnvironmentsRepository {
   @override
   Future<List<Device>> fetchDevices(String surroundingId) async {
     try {
+      log('fetching devices for surrounding $surroundingId');
       final ApiResponse<List<device.Device>, NetworkError> devicesResponse = await _service.fetchDevices(surroundingId);
       Box devicesBox = await Hive.openBox(HIVE_DEVICES_BOX);
       if(devicesResponse.success) {
