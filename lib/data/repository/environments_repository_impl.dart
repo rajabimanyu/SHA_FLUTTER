@@ -1,11 +1,15 @@
 
 
+import 'dart:convert';
 import 'dart:developer';
 import 'dart:ffi';
 
+import 'package:flutter/cupertino.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:injectable/injectable.dart';
 import 'package:internet_connection_checker/internet_connection_checker.dart';
+import 'package:sha/core/model/ui_state.dart';
+import 'package:sha/data/network/service/models/Thing.dart';
 import 'package:sha/data/network/service/models/surrounding.dart' as surrounding;
 import 'package:sha/data/repository/environments_repository.dart';
 
@@ -20,6 +24,7 @@ import 'package:sha/models/device.dart' as deviceDBModel;
 import 'package:sha/models/thing.dart' as thingDBModel;
 
 import '../../base/ShaConstants.dart';
+import '../../base/boxes.dart';
 import '../../models/device.dart';
 
 @Injectable(as: EnvironmentsRepository)
@@ -138,5 +143,62 @@ class EnvironmentsRepositoryImpl implements EnvironmentsRepository {
       print('$stack');
     }
     return List.empty(growable: false);
+  }
+
+  @override
+  void toggleThingState(String surroundingId, String deviceId, String id, String thingType, String status, String currentStep, String totalStep) async {
+    try {
+      Map<String, dynamic> requestMap = {
+        'id': id,
+        'thingType': thingType,
+        'status': status,
+        'totalStep': totalStep,
+        'currentStep': currentStep
+      };
+
+      ApiResponse<Thing, NetworkError> response = await _service.toggleThingSettings(requestMap);
+      log('before all ${response.success}');
+      log('before all ${response.error}');
+      log('request $requestMap');
+      if(response.success) {
+        log('succ');
+        Thing? thingResponse = response.data;
+        log('succ $thingResponse');
+        if(thingResponse != null) {
+          log('resp null $thingResponse');
+          if (deviceBox.containsKey(surroundingId)) {
+            log('device box has $surroundingId');
+            List<Device> devicesDB = deviceBox.get(surroundingId).cast<Device>();
+            Device deviceDB = devicesDB.firstWhere((element) => element.id == deviceId);
+            int deviceIndexToReplace = devicesDB.indexWhere((element) => element.id == deviceId);
+            thingDBModel.Thing thingDB = thingDBModel.Thing(environmentID: thingResponse.environmentId,
+                deviceID: thingResponse.deviceId,
+                id: thingResponse.id,
+                status: thingResponse.status,
+                thingType: thingResponse.thingType,
+                totalStep: int.parse(thingResponse.totalStep),
+                currentStep: int.parse(thingResponse.currentStep),
+                lastUpdatedTime: thingResponse.lastUpdatedTime);
+
+            List<thingDBModel.Thing> thingsDB = deviceDB.things;
+            int thingIndexToReplace = thingsDB.indexWhere((element) => element.id == thingDB.id);
+            if(thingIndexToReplace >= 0 && thingIndexToReplace < thingsDB.length) {
+              log('thing index $thingIndexToReplace');
+              thingsDB[thingIndexToReplace] = thingDB;
+              if(deviceIndexToReplace >= 0 && deviceIndexToReplace < devicesDB.length) {
+                log('dewv index $deviceIndexToReplace');
+                deviceDBModel.Device device = deviceDBModel.Device(
+                    environmentID: deviceDB.environmentID, surroundingID: deviceDB.surroundingID, id: deviceDB.id, things: thingsDB);
+                devicesDB[deviceIndexToReplace] = device;
+                deviceBox.put(surroundingId, devicesDB);
+              }
+            }
+          }
+        }
+      }
+    } catch (e, stack) {
+      log('exception in toggle thing settings : $e');
+      print('$stack');
+    }
   }
 }

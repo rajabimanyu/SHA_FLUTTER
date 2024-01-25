@@ -1,3 +1,6 @@
+
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:sha/models/thing.dart';
@@ -5,7 +8,8 @@ import 'package:sha/ui/views/toggle_switch.dart';
 
 class BulbSwitch extends StatefulWidget {
   final Thing thing;
-  const BulbSwitch({Key? key, required this.thing}): super(key: key);
+  final void Function(String status, String deviceId, String id, String thingType, int currentStep, int totalStep) onBulbSwitch;
+  const BulbSwitch({Key? key, required this.thing, required this.onBulbSwitch}): super(key: key);
 
   @override
   State<StatefulWidget> createState() {
@@ -51,6 +55,7 @@ class BulbSwitchState extends State<BulbSwitch> {
                   child: _isLoading
                       ? const CircularProgressIndicator()
                       : Switch(value: switchStatus, onChanged: (bool value) {
+                        log("switch value $value");
                         _setLoading(true);
                   }),
                 ),
@@ -63,8 +68,16 @@ class BulbSwitchState extends State<BulbSwitch> {
   }
 
   void _setLoading(bool isLoading) {
-    setState(() {
-      _isLoading = isLoading;
-    });
+    // setState(() {
+    //   _isLoading = isLoading;
+    // });
+    widget.onBulbSwitch(
+      widget.thing.status,
+      widget.thing.deviceID,
+      widget.thing.id,
+      widget.thing.thingType,
+      widget.thing.currentStep,
+      widget.thing.totalStep
+    );
   }
 }

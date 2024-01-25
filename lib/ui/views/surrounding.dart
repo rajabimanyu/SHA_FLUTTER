@@ -15,8 +15,10 @@ import 'package:sha/ui/cubit/devices_cubit.dart';
 import 'package:sha/ui/views/bulb_switch.dart';
 import 'package:sha/ui/views/fan_switch.dart';
 import 'package:sha/ui/views/toggle_switch.dart';
+import 'package:sha/util/ShaUtils.dart';
 import 'package:sizer/sizer.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:rxdart/rxdart.dart';
 
 import '../../base/ShaConstants.dart';
 import '../../core/model/ui_state.dart';
@@ -49,8 +51,11 @@ class _SurroundingWidgetState extends State<SurroundingWidget> {
 
   @override
   Widget build(BuildContext context) {
+    var count = 0;
     deviceBox.watch(key: widget.surrounding.uuid).listen((event) {
-      log("events : ${event.value}");
+      Device device = event.value[0];
+      log('dev de ${device.things[1].status}');
+      count++;
       final List<Device> devices = (event.value ?? List.empty(growable: true)).cast<Device>();
       _setThings(devices);
     });
@@ -58,41 +63,23 @@ class _SurroundingWidgetState extends State<SurroundingWidget> {
   }
 
   Widget DevicesWidget() {
-    return BlocProvider(
-        create: (_) => deviceCubit,
-        child: BlocListener<DeviceCubit, UIState>(
-          listener: (context, state) {
-            if (state is SuccessState) {
-              log('Devices fetch Success');
-              widget.fetchedSurroundings.add(widget.surrounding.uuid);
-            }
-          },
-          child: BlocBuilder<DeviceCubit, UIState>(builder: (context, state) {
-            if(state is SuccessState) {
-              return ListView.builder(
-                  itemCount: things.length,
-                  itemBuilder: (BuildContext context, int position) {
-                    return BulbSwitch(thing: things[position]);
-                  });
-            } else if(state is FailureState) {
-              return SnackBar(
-                content: Text((state.error as UiError).message),
-                backgroundColor: Theme.of(context).colorScheme.error,
-              );
-            }
-          }),
-        ));
     deviceCubit.stream.listen((event) {
       if (event is SuccessState) {
         log('Devices fetch Success');
         widget.fetchedSurroundings.add(widget.surrounding.uuid);
       }
     });
+    log('render widge');
     if (things.isNotEmpty) {
       return ListView.builder(
           itemCount: things.length,
           itemBuilder: (BuildContext context, int position) {
-            return BulbSwitch(thing: things[position]);
+            return BulbSwitch(thing: things[position], onBulbSwitch: (
+                String status, String deviceId, String id,
+                String thingType, int currentStep, int totalStep) => {
+              log('call dev cubit $status'),
+              deviceCubit.toggleThingState(widget.surrounding.uuid, deviceId, id, thingType, status, currentStep, totalStep)
+            });
           });
     } else {
       return Container(

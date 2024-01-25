@@ -11,6 +11,7 @@ import 'package:sha/core/network/response.dart';
 import 'package:sha/data/network/service/mock_response_data.dart';
 import 'package:sha/data/network/service/models/Device.dart';
 import 'package:sha/data/network/service/models/Environment.dart' as env;
+import 'package:sha/data/network/service/models/Thing.dart';
 import 'package:sha/data/network/service/models/surrounding.dart';
 import 'package:sha/models/user.dart';
 
@@ -61,6 +62,26 @@ class ApiService {
       var jsonResponse = jsonDecode(_getDevices(surroundingId));
 
       final List<Device> result = (jsonResponse as List).map((e) => Device.fromJson(e)).toList();
+      return ApiResponse.completed(result);
+    } catch (e, stack) {
+      log('error in devices fetch : $e');
+      print('error in devices fetch stack : $stack');
+      return ApiResponse.error(_defaultError);
+    }
+  }
+
+  Future<ApiResponse<Thing, NetworkError>> toggleThingSettings(Map<String, dynamic> requestData) async {
+    final url = '$_baseUrl/things';
+    try {
+      await MockResponseData.mockApiDelay();
+      // final result = await _apiClient.get(url);
+      late var jsonResponse;
+      if(requestData['status'] == "ON") {
+        jsonResponse = jsonDecode(MockResponseData.toggleBulbStatusOFF);
+      } else {
+        jsonResponse = jsonDecode(MockResponseData.toggleBulbStatusON);
+      }
+      final Thing result = Thing.fromJson(jsonResponse);
       return ApiResponse.completed(result);
     } catch (e, stack) {
       log('error in devices fetch : $e');

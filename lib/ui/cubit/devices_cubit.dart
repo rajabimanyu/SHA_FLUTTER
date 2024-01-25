@@ -17,4 +17,8 @@ class DeviceCubit extends Cubit<UIState> {
       emit(FailureState(DataError(message: "No Devices Found", dataErrorType: DataErrorType.DEVICES_NOT_AVAILABLE)));
     }
   }
+
+  void toggleThingState(String surroundingId, String deviceId, String id, String thingType, String status, int currentStep, int totalStep) async {
+    _environmentsRespository.toggleThingState(surroundingId, deviceId, id, thingType, status, currentStep.toString(), totalStep.toString());
+  }
 }

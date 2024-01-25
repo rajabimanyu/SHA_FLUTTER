@@ -7,4 +7,5 @@ abstract class EnvironmentsRepository {
   Future<List<Surrounding>> fetchHomeSurroundings();
   Future<List<Environment>> fetchEnvironments();
   Future<List<Device>> fetchDevices(String surroundingId);
+  void toggleThingState(String surroundingId, String deviceId, String id, String thingType, String status, String currentStep, String totalStep);
 }

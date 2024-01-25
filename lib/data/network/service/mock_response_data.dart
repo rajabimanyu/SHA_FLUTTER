@@ -80,7 +80,7 @@ class MockResponseData {
         "environmentID": "environmentc2e0e555-9573-468a-9c7f-a866c3cfd430",
         "id": "thing75d07515-8370-4e50-94b6-c74232f3799d",
         "thingType": "FAN",
-        "status": "ON",
+        "status": "OFF",
         "totalStep": 5,
         "currentStep": 2,
         "lastUpdatedTime": 1693044552412,
@@ -88,7 +88,7 @@ class MockResponseData {
       },
       {
         "environmentID": "environmentc2e0e555-9573-468a-9c7f-a866c3cfd430",
-        "id": "thing6c7ff4b4-fa2d-4b6b-8429-6a2fda8d55ac",
+        "id": "thing_bulb_bedroom",
         "thingType": "BULB",
         "status": "ON",
         "totalStep": 5,
@@ -477,4 +477,30 @@ class MockResponseData {
     ]
   }
   ]''';
+
+  static const toggleBulbStatusOFF = '''
+  {  
+  "environmentID": "environmentc2e0e555-9573-468a-9c7f-a866c3cfd430",
+    "id": "thing_bulb_bedroom",
+    "thingType": "BULB",
+    "status": "OFF",
+    "totalStep": 5,
+    "currentStep": 2,
+    "lastUpdatedTime": 1693067689061,
+    "deviceID": "devicenew1"
+    }
+  ''';
+
+  static const toggleBulbStatusON = '''
+  {  
+  "environmentID": "environmentc2e0e555-9573-468a-9c7f-a866c3cfd430",
+    "id": "thing_bulb_bedroom",
+    "thingType": "BULB",
+    "status": "ON",
+    "totalStep": 5,
+    "currentStep": 2,
+    "lastUpdatedTime": 1693067689099,
+    "deviceID": "devicenew1"
+    }
+  ''';
 }
