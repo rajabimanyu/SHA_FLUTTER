@@ -6,23 +6,23 @@ import 'package:flutter/widgets.dart';
 import 'package:sha/models/thing.dart';
 import 'package:sha/ui/views/toggle_switch.dart';
 
-class BulbSwitch extends StatefulWidget {
+class LightSwitch extends StatefulWidget {
   final Thing thing;
-  final void Function(String status, String deviceId, String id, String thingType, int currentStep, int totalStep) onBulbSwitch;
-  const BulbSwitch({Key? key, required this.thing, required this.onBulbSwitch}): super(key: key);
+  final void Function(String status, String deviceId, String id, String thingType, int currentStep, int totalStep) onLightSwitch;
+  const LightSwitch({Key? key, required this.thing, required this.onLightSwitch}): super(key: key);
 
   @override
   State<StatefulWidget> createState() {
-    return BulbSwitchState();
+    return LightSwitchState();
   }
 }
 
-class BulbSwitchState extends State<BulbSwitch> {
+class LightSwitchState extends State<LightSwitch> {
   bool _isLoading = false;
 
   @override
   Widget build(BuildContext context) {
-    IconData icon = widget.thing.status == "ON" ? Bulb.iconOn : Bulb.iconOff;
+    IconData icon = widget.thing.status == "ON" ? Light.iconOn : Light.iconOff;
     Color iconColor = widget.thing.status == "ON" ? Colors.white : Colors.white12;
     bool switchStatus = widget.thing.status == "ON" ? true : false;
     return Padding(
@@ -43,7 +43,7 @@ class BulbSwitchState extends State<BulbSwitch> {
               Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: Text(
-                  "Bulb",
+                  "Light",
                   style: Theme.of(context).textTheme.titleLarge,
                 ),
               ),
@@ -55,8 +55,8 @@ class BulbSwitchState extends State<BulbSwitch> {
                   child: _isLoading
                       ? const CircularProgressIndicator()
                       : Switch(value: switchStatus, onChanged: (bool value) {
-                        log("switch value $value");
-                        _toggleStatus(value);
+                    log("switch value $value");
+                    _setLoading(true);
                   }),
                 ),
               ),
@@ -67,17 +67,17 @@ class BulbSwitchState extends State<BulbSwitch> {
     );
   }
 
-  void _toggleStatus(bool status) {
+  void _setLoading(bool isLoading) {
     setState(() {
-      _isLoading = true;
+      _isLoading = isLoading;
     });
-    widget.onBulbSwitch(
-      status ? 'ON' : 'OFF',
-      widget.thing.deviceID,
-      widget.thing.id,
-      widget.thing.thingType,
-      widget.thing.currentStep,
-      widget.thing.totalStep
+    widget.onLightSwitch(
+        widget.thing.status,
+        widget.thing.deviceID,
+        widget.thing.id,
+        widget.thing.thingType,
+        widget.thing.currentStep,
+        widget.thing.totalStep
     );
   }
 }

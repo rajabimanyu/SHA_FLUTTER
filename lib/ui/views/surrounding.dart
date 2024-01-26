@@ -12,8 +12,10 @@ import 'package:sha/models/device.dart';
 import 'package:sha/models/surrounding.dart';
 import 'package:sha/models/thing.dart';
 import 'package:sha/ui/cubit/devices_cubit.dart';
+import 'package:sha/ui/views/LightSwitch.dart';
 import 'package:sha/ui/views/bulb_switch.dart';
 import 'package:sha/ui/views/fan_switch.dart';
+import 'package:sha/ui/views/plug_switch.dart';
 import 'package:sha/ui/views/toggle_switch.dart';
 import 'package:sha/util/ShaUtils.dart';
 import 'package:sizer/sizer.dart';
@@ -51,11 +53,9 @@ class _SurroundingWidgetState extends State<SurroundingWidget> {
 
   @override
   Widget build(BuildContext context) {
-    var count = 0;
     deviceBox.watch(key: widget.surrounding.uuid).listen((event) {
       Device device = event.value[0];
       log('dev de ${device.things[1].status}');
-      count++;
       final List<Device> devices = (event.value ?? List.empty(growable: true)).cast<Device>();
       _setThings(devices);
     });
@@ -74,12 +74,40 @@ class _SurroundingWidgetState extends State<SurroundingWidget> {
       return ListView.builder(
           itemCount: things.length,
           itemBuilder: (BuildContext context, int position) {
-            return BulbSwitch(thing: things[position], onBulbSwitch: (
-                String status, String deviceId, String id,
-                String thingType, int currentStep, int totalStep) => {
-              log('call dev cubit $status'),
-              deviceCubit.toggleThingState(widget.surrounding.uuid, deviceId, id, thingType, status, currentStep, totalStep)
-            });
+            switch (things[position].thingType) {
+              case "BULB":
+                return BulbSwitch(thing: things[position], onBulbSwitch: (
+                    String status, String deviceId, String id,
+                    String thingType, int currentStep, int totalStep) => {
+                  log('call dev cubit $status'),
+                  deviceCubit.toggleThingState(widget.surrounding.uuid, deviceId, id, thingType, status, currentStep, totalStep)
+                });
+                break;
+              case "FAN":
+                return FanSwitch(thing: things[position], onFanSwitch: (
+                    String status, String deviceId, String id,
+                    String thingType, int currentStep, int totalStep) => {
+                  log('call dev cubit $status'),
+                  deviceCubit.toggleThingState(widget.surrounding.uuid, deviceId, id, thingType, status, currentStep, totalStep)
+                });
+                break;
+              case "LIGHT":
+                return LightSwitch(thing: things[position], onLightSwitch: (
+                    String status, String deviceId, String id,
+                    String thingType, int currentStep, int totalStep) => {
+                  log('call dev cubit $status'),
+                  deviceCubit.toggleThingState(widget.surrounding.uuid, deviceId, id, thingType, status, currentStep, totalStep)
+                });
+                break;
+              case "PLUG":
+                return PlugSwitch(thing: things[position], onPlugSettingsChanged: (
+                    String status, String deviceId, String id,
+                    String thingType, int currentStep, int totalStep) => {
+                  log('call dev cubit $status'),
+                  deviceCubit.toggleThingState(widget.surrounding.uuid, deviceId, id, thingType, status, currentStep, totalStep)
+                });
+                break;
+            }
           });
     } else {
       return Container(

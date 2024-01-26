@@ -1,27 +1,32 @@
 import 'package:flutter/material.dart';
 
-class FanSwitch extends StatelessWidget {
+import '../../models/thing.dart';
+
+class FanSwitch extends StatefulWidget {
+  final Thing thing;
+  final void Function(String status, String deviceId, String id, String thingType, int currentStep, int totalStep) onFanSwitch;
+
   const FanSwitch({
     super.key,
-    required this.totalSteps,
-    required this.currentStep,
-    required this.isOn,
-    required this.deviceName,
-    required this.isLoading,
-    required this.onToggleSwitch,
-    required this.changeStep,
+    required this.thing,
+    required this.onFanSwitch
   });
 
-  final int totalSteps;
-  final int currentStep;
-  final bool isOn;
-  final String deviceName;
-  final bool isLoading;
-  final void Function(bool isOn) onToggleSwitch;
-  final void Function(int step) changeStep;
+  @override
+  State<StatefulWidget> createState() {
+    return FanSwitchState();
+  }
+}
 
+class FanSwitchState extends State<FanSwitch> {
+  bool _isLoading = false;
   @override
   Widget build(BuildContext context) {
+    IconData icon = widget.thing.status == "ON" ? Icons.wind_power : Icons.mode_fan_off_outlined;
+    Color iconColor = widget.thing.status == "ON" ? Colors.white : Colors.white12;
+    bool switchStatus = widget.thing.status == "ON" ? true : false;
+    int currentStep = widget.thing.currentStep;
+    int totalSteps = widget.thing.totalStep;
     return Padding(
       padding: const EdgeInsets.all(8),
       child: Card(
@@ -33,18 +38,18 @@ class FanSwitch extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Icon(
-                isOn ? Icons.wind_power : Icons.mode_fan_off_outlined,
-                color: isOn ? Colors.white : Colors.white12,
+                icon,
+                color: iconColor,
                 size: 32,
               ),
               Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: Text(
-                  deviceName,
+                  "Fan",
                   style: Theme.of(context).textTheme.titleLarge,
                 ),
               ),
-              isLoading
+              _isLoading
                   ? const SizedBox(
                       height: 40,
                       width: 40,
@@ -61,13 +66,16 @@ class FanSwitch extends StatelessWidget {
                           children: [
                             Slider(
                               value: currentStep.toDouble(),
-                              onChanged: (value) => changeStep(value.toInt()),
+                              onChanged: (value) => _adjustSteps(value),
                               min: 0,
                               max: totalSteps.toDouble(),
                               divisions: totalSteps,
+                              onChangeEnd: (value) => _adjustSteps(value),
                             ),
                             const SizedBox(width: 16),
-                            Switch(value: isOn, onChanged: onToggleSwitch),
+                            Switch(value: switchStatus, onChanged: (bool value) {
+                              _toggleStatus(value);
+                            }),
                           ],
                         ),
                       ),
@@ -76,6 +84,34 @@ class FanSwitch extends StatelessWidget {
           ),
         ),
       ),
+    );
+  }
+
+  void _toggleStatus(bool status) {
+    setState(() {
+      _isLoading = true;
+    });
+    widget.onFanSwitch(
+        status ? 'ON' : 'OFF',
+        widget.thing.deviceID,
+        widget.thing.id,
+        widget.thing.thingType,
+        widget.thing.currentStep,
+        widget.thing.totalStep
+    );
+  }
+
+  void _adjustSteps(double steps) {
+    setState(() {
+      _isLoading = true;
+    });
+    widget.onFanSwitch(
+        widget.thing.status,
+        widget.thing.deviceID,
+        widget.thing.id,
+        widget.thing.thingType,
+        steps.toInt(),
+        widget.thing.totalStep
     );
   }
 }

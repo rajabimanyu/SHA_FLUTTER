@@ -20,7 +20,7 @@ class ToggleSwitch extends StatelessWidget {
         Bulb() => isOn ? Bulb.iconOn : Bulb.iconOff,
         Fan() => Fan.icon,
         Light() => isOn ? Light.iconOn : Light.iconOff,
-        Plug() => Plug.icon,
+        Plug() => Plug.iconOn,
       };
 
   @override
@@ -83,5 +83,6 @@ class Light extends ToggleSwitchType {
 }
 
 class Plug extends ToggleSwitchType {
-  static const icon = Icons.power_settings_new;
+  static const iconOn = Icons.power;
+  static const iconOff = Icons.power_off;
 }
