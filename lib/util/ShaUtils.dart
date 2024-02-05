@@ -1,5 +1,7 @@
 import "dart:async";
 
+import 'package:sha/base/ShaConstants.dart';
+
 /// Listens to [source] to returned stream.
 ///
 /// Each listener on the returned stream receives the most recent
@@ -53,4 +55,9 @@ Stream<T> mostRecentStream<T>(Stream<T> source) {
       listeners.add(controller);
     }
   });
+}
+
+
+String getSurroundingKey(String envId) {
+  return '${envId}_$HIVE_SURROUNDINGS';
 }

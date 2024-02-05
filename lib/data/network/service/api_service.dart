@@ -90,6 +90,57 @@ class ApiService {
     }
   }
 
+  Future<ApiResponse<env.Environment, NetworkError>> createEnvironment(Map<String, dynamic> requestData) async {
+    final url = '$_baseUrl/environments';
+    try {
+      await MockResponseData.mockApiDelay();
+      // final result = await _apiClient.post(url);
+      var jsonResponse = jsonDecode(MockResponseData.createEnvResponse);
+      bool isSuccess = jsonResponse['success'];
+      if(isSuccess) {
+        var data = jsonResponse['data'];
+        final env.Environment result = data.map((e) => env.Environment.fromJson(e));
+        return ApiResponse.completed(result);
+      } else {
+        return ApiResponse.error(_defaultError);
+      }
+    } catch (e, stack) {
+      log('error in environments fetch : $e');
+      print('error in environments fetch stack : $stack');
+      return ApiResponse.error(_defaultError);
+    }
+  }
+
+  Future<ApiResponse<Surrounding, NetworkError>> createSurrounding(Map<String, dynamic> requestData) async {
+    final url = '$_baseUrl/surroundings';
+    try {
+      await MockResponseData.mockApiDelay();
+      // final result = await _apiClient.post(url);
+      var jsonResponse = jsonDecode(MockResponseData.createSurroundingResponse);
+      final Surrounding result = Surrounding.fromJson(jsonResponse);
+      return ApiResponse.completed(result);
+    } catch (e, stack) {
+      log('error in environments fetch : $e');
+      print('error in environments fetch stack : $stack');
+      return ApiResponse.error(_defaultError);
+    }
+  }
+
+  Future<ApiResponse<Surrounding, NetworkError>> createDevice(Map<String, dynamic> requestData) async {
+    final url = '$_baseUrl/surroundings';
+    try {
+      await MockResponseData.mockApiDelay();
+      // final result = await _apiClient.post(url);
+      var jsonResponse = jsonDecode(MockResponseData.createSurroundingResponse);
+      final Surrounding result = Surrounding.fromJson(jsonResponse);
+      return ApiResponse.completed(result);
+    } catch (e, stack) {
+      log('error in environments fetch : $e');
+      print('error in environments fetch stack : $stack');
+      return ApiResponse.error(_defaultError);
+    }
+  }
+
   String _getDevices(String surroundingId) {
     switch (surroundingId) {
       case "surrounding1611f5eb-a9ee-410e-9cbe-7294111a6d25":

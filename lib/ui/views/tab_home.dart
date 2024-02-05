@@ -9,6 +9,7 @@ import 'package:sha/ui/views/surrounding.dart';
 
 import '../../core/model/ui_state.dart';
 import 'package:sha/models/surrounding.dart';
+import '../../route/routes.dart';
 import 'home_page_drawer.dart';
 
 class TabHome extends StatefulWidget {
@@ -72,7 +73,7 @@ class TabHomePageState extends State<TabHome> with TickerProviderStateMixin {
             backgroundColor: theme.floatingActionButtonTheme.backgroundColor,
             shape: const CircleBorder(),
             onPressed: (){
-
+              Navigator.of(context).pushNamed(ShaRoutes.qrPageRoute);
             },
             child: const Icon(Icons.add)
         ),

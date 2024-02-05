@@ -12,7 +12,7 @@ import '../../data/repository/environments_repository.dart';
 import '../../models/environment.dart';
 
 class HomeCubit extends Cubit<UIState> {
-  final EnvironmentsRepository _environmentsRespository;
+  final HomeRepository _environmentsRespository;
   final SurroundingsRepository _surroundingsRepository;
 
   HomeCubit(

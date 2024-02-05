@@ -22,16 +22,17 @@ import 'package:sha/models/environment.dart' as envDBModel;
 import 'package:sha/models/surrounding.dart' as surroundingDBModel;
 import 'package:sha/models/device.dart' as deviceDBModel;
 import 'package:sha/models/thing.dart' as thingDBModel;
+import 'package:sha/util/ShaUtils.dart';
 
 import '../../base/ShaConstants.dart';
 import '../../base/boxes.dart';
 import '../../models/device.dart';
 
-@Injectable(as: EnvironmentsRepository)
-class EnvironmentsRepositoryImpl implements EnvironmentsRepository {
+@Injectable(as: HomeRepository)
+class HomeRepositoryImpl implements HomeRepository {
   final ApiService _service;
 
-  EnvironmentsRepositoryImpl(this._service);
+  HomeRepositoryImpl(this._service);
 
   @override
   Future<List<envDBModel.Environment>> fetchEnvironments() async {
@@ -89,14 +90,14 @@ class EnvironmentsRepositoryImpl implements EnvironmentsRepository {
           log('environments from api $surroundings');
           final List<surroundingDBModel.Surrounding> surroundingsDB = surroundings.map((e) => surroundingDBModel.Surrounding(uuid: e.id, name: e.name)).toList();
           if(surroundingsDB.isNotEmpty) {
-            surroundingsBox.put(HIVE_SURROUNDINGS, surroundingsDB);
+            surroundingsBox.put(getSurroundingKey(currentEnvironment.uuid), surroundingsDB);
             return surroundingsDB;
           } else {
             return List.empty(growable: false);
           }
         } else {
-          if(surroundingsBox.containsKey(HIVE_SURROUNDINGS)) {
-            final List<surroundingDBModel.Surrounding> finalSurroundings = surroundingsBox.get(HIVE_SURROUNDINGS)?.cast<surroundingDBModel.Surrounding>();
+          if(surroundingsBox.containsKey(getSurroundingKey(currentEnvironment.uuid))) {
+            final List<surroundingDBModel.Surrounding> finalSurroundings = surroundingsBox.get(getSurroundingKey(currentEnvironment.uuid))?.cast<surroundingDBModel.Surrounding>();
             surroundingsBox.close();
             return finalSurroundings;
           }

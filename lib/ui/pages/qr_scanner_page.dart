@@ -1,5 +1,9 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
+
+import '../../route/routes.dart';
 
 class QrScannerPage extends StatefulWidget {
   const QrScannerPage({super.key});
@@ -54,7 +58,7 @@ class _QrScannerPageState extends State<QrScannerPage>
             child: ElevatedButton(
               onPressed: () {
                 Navigator.of(context).pop();
-                // TODO: Proceed to next screen
+                Navigator.of(context).popAndPushNamed(ShaRoutes.addDeviceRoute);
               },
               style: ButtonStyle(
                 backgroundColor: MaterialStatePropertyAll(
@@ -95,20 +99,25 @@ class _QrScannerPageState extends State<QrScannerPage>
         controller: _cameraController,
         onDetect: (capture) {
           final barcodes = capture.barcodes;
-          for (final barcode in barcodes) {
-            debugPrint('Barcode scanned => ${barcode.rawValue}');
-            if (barcode.rawValue?.isNotEmpty == true) {
-              showModalBottomSheet(
-                enableDrag: true,
-                transitionAnimationController:
-                    BottomSheet.createAnimationController(this),
-                context: context,
-                builder: (context) {
-                  return _buildResultBottomSheet(barcode.rawValue!);
-                },
-              );
-            }
+          final codeData = barcodes[0].rawValue;
+          log('Barcode scanned => ${codeData}');
+          if(codeData != null) {
+            Navigator.of(context).popAndPushNamed(ShaRoutes.addDeviceRoute, arguments: codeData);
           }
+          // for (final barcode in barcodes) {
+          //   debugPrint('Barcode scanned => ${barcode.rawValue}');
+          //   if (barcode.rawValue?.isNotEmpty == true) {
+          //     showModalBottomSheet(
+          //       enableDrag: true,
+          //       transitionAnimationController:
+          //           BottomSheet.createAnimationController(this),
+          //       context: context,
+          //       builder: (context) {
+          //         return _buildResultBottomSheet(barcode.rawValue!);
+          //       },
+          //     );
+          //   }
+          // }
         },
       ),
     );

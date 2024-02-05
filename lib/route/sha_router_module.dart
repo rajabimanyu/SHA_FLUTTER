@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:sha/core/route/router_module.dart';
 import 'package:sha/route/routes.dart';
+import 'package:sha/ui/pages/add_device.dart';
 import 'package:sha/ui/pages/pages.dart';
 
 class ShaRouterModule implements RouterModule {
@@ -30,6 +31,12 @@ class ShaRouterModule implements RouterModule {
       ShaRoutes.homePageRoute: (settings) {
         return ShaPageRoute(
           builder: (_) => const HomePage(),
+          settings: settings,
+        );
+      },
+      ShaRoutes.addDeviceRoute: (settings) {
+        return ShaPageRoute(
+          builder: (_) => const AddDevicePage(),
           settings: settings,
         );
       },

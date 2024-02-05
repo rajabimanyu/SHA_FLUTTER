@@ -5,7 +5,7 @@ import '../../data/repository/environments_repository.dart';
 import '../../models/device.dart';
 
 class DeviceCubit extends Cubit<UIState> {
-  final EnvironmentsRepository _environmentsRespository;
+  final HomeRepository _environmentsRespository;
   DeviceCubit(this._environmentsRespository): super(InitialState());
 
   void fetchDeviceData(String surroundingId) async {

@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:logger/logger.dart';
 
 T? safeTry<T>(T? Function() block,
-    {T? Function(dynamic)? onError, Logger? logger}) {
+    {T? Function(dynamic, dynamic)? onError, Logger? logger}) {
   logger = logger ?? Logger();
   try {
     final result = block();
@@ -13,9 +13,9 @@ T? safeTry<T>(T? Function() block,
       });
     }
     return result;
-  } catch (e) {
+  } catch (e, stack) {
     logger.e(e);
-    return onError != null ? onError(e) : null;
+    return onError != null ? onError(e, stack) : null;
   }
 }
 
