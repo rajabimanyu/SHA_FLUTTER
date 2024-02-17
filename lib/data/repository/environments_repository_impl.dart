@@ -44,7 +44,7 @@ class HomeRepositoryImpl implements HomeRepository {
         List<env.Environment> environments = envResponse.data ?? List.empty(growable: false);
         log('environments from api $environments');
         if(environments.isNotEmpty) {
-          final currentEnvironment = await _getCurrentEnvironment(envDBModel.Environment(uuid: environments[0].id, name: environments[0].name, isCurrentEnvironment: true));
+          final currentEnvironment = await getCurrentEnvironment(envDBModel.Environment(uuid: environments[0].id, name: environments[0].name, isCurrentEnvironment: true));
           final List<envDBModel.Environment> environmentsDB = environments.map((e) => envDBModel.Environment(uuid: e.id, name: e.name, isCurrentEnvironment: currentEnvironment.uuid == e.id)).toList();
           await environmentsBox.put(HIVE_ENVIRONMENTS, environmentsDB);
           environmentsBox.close();
@@ -65,15 +65,19 @@ class HomeRepositoryImpl implements HomeRepository {
     return List.empty(growable: false);
   }
 
-  Future<envDBModel.Environment> _getCurrentEnvironment(envDBModel.Environment defaultCurrentEnvironment) async {
+  @override
+  Future<envDBModel.Environment> getCurrentEnvironment(envDBModel.Environment defaultCurrentEnvironment) async {
     Box environmentsBox = await Hive.openBox(HIVE_ENVIRONMENT_BOX);
     if(environmentsBox.containsKey(HIVE_ENVIRONMENTS)) {
       final List<envDBModel.Environment> environments = environmentsBox.get(HIVE_ENVIRONMENTS)?.cast<envDBModel.Environment>();
       final envDBModel.Environment currentEnvironment = environments.firstWhere(
               (element) => element.isCurrentEnvironment == true, orElse: () => defaultCurrentEnvironment
       );
+      environmentsBox.close();
       return currentEnvironment;
     }
+
+    environmentsBox.close();
     return defaultCurrentEnvironment;
   }
 

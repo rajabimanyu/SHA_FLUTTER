@@ -126,13 +126,13 @@ class ApiService {
     }
   }
 
-  Future<ApiResponse<Surrounding, NetworkError>> createDevice(Map<String, dynamic> requestData) async {
-    final url = '$_baseUrl/surroundings';
+  Future<ApiResponse<Device, NetworkError>> createDevice(Map<String, dynamic> requestData) async {
+    final url = '$_baseUrl/devices';
     try {
       await MockResponseData.mockApiDelay();
       // final result = await _apiClient.post(url);
-      var jsonResponse = jsonDecode(MockResponseData.createSurroundingResponse);
-      final Surrounding result = Surrounding.fromJson(jsonResponse);
+      var jsonResponse = jsonDecode(MockResponseData.createDeviceResponse);
+      final Device result = Device.fromJson(jsonResponse);
       return ApiResponse.completed(result);
     } catch (e, stack) {
       log('error in environments fetch : $e');

@@ -13,7 +13,7 @@ import 'package:sha/base/di/inject_config.dart';
 import 'package:sha/core/model/ui_state.dart';
 import 'package:sha/models/user.dart';
 import 'package:sha/route/routes.dart';
-import 'package:sha/ui/cubit/login_cubit.dart';
+import 'package:sha/ui/bloc/login_cubit.dart';
 import 'package:sizer/sizer.dart';
 import 'package:url_launcher/url_launcher.dart';
 

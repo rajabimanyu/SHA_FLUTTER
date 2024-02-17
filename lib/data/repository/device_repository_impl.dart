@@ -2,46 +2,63 @@ import 'dart:developer';
 
 import 'package:hive/hive.dart';
 import 'package:injectable/injectable.dart';
+import 'package:kt_dart/collection.dart';
 import 'package:sha/core/network/network_error.dart';
 import 'package:sha/core/network/response.dart';
-import 'package:sha/data/repository/NewDeviceRepository.dart';
+import 'package:sha/data/network/service/models/Device.dart';
+import 'package:sha/data/repository/device_repository.dart';
 import 'package:sha/util/ShaUtils.dart';
 
 import '../../base/ShaConstants.dart';
 
 import '../../models/surrounding.dart';
+import '../../models/thing.dart';
 import '../network/service/api_service.dart';
 import 'package:sha/data/network/service/models/Environment.dart' as env;
 import 'package:sha/models/environment.dart' as envDBModel;
+import 'package:sha/models/device.dart' as deviceDBModel;
 import 'package:sha/data/network/service/models/surrounding.dart' as surrounding;
+import '../../base/boxes.dart';
 
-
-@Injectable(as: NewDeviceRepository)
-class NewDeviceRepositoryImpl extends NewDeviceRepository {
+@Injectable(as: DeviceRepository)
+class DeviceRepositoryImpl extends DeviceRepository {
   final ApiService _service;
-  NewDeviceRepositoryImpl(this._service);
+  DeviceRepositoryImpl(this._service);
 
   @override
-  void createDevice(String deviceID, String environmentID, String surroundingID) async {
+  Future<bool> createDevice(String deviceID, String environmentID, String surroundingID) async {
     try {
-      Box envBox = await Hive.openBox(HIVE_ENVIRONMENT_BOX);
       Map<String, dynamic> requestMap = {
         'deviceID': deviceID,
         'environmentID': environmentID,
         'surroundingID': surroundingID
       };
-      final ApiResponse<env.Environment, NetworkError> envResponse = await _service.createEnvironment(requestMap);
-      if(envResponse.success) {
-        final environment = envResponse.data;
-        final environmentDB = envDBModel.Environment(uuid: environment?.id ?? "", name: environment?.name ?? "", isCurrentEnvironment: false);
-        final List<envDBModel.Environment> environmentsFromDB = envBox.get(HIVE_ENVIRONMENT_BOX, defaultValue: List.empty(growable: true));
-        environmentsFromDB.add(environmentDB);
-        envBox.put(HIVE_ENVIRONMENT_BOX, environmentsFromDB);
+      final ApiResponse<Device, NetworkError> deviceResponse = await _service.createDevice(requestMap);
+      if(deviceResponse.success) {
+        final device = deviceResponse.data;
+
+        final deviceDB = deviceDBModel.Device(environmentID: device?.environmentId ?? '', surroundingID: device?.surroundingId ?? '',
+            id: device?.deviceId ?? '', things: device!.things.map((t) => Thing(
+            environmentID: t.environmentId,
+            deviceID: t.deviceId,
+            id: t.id,
+            status: t.status,
+            thingType: t.thingType,
+            totalStep: int.parse(t.totalStep),
+            currentStep: int.parse(t.currentStep),
+            lastUpdatedTime: t.lastUpdatedTime
+        )).toList());
+        final List<deviceDBModel.Device> devicesDB = deviceBox.get(surroundingID, defaultValue: List.empty(growable: true));
+        devicesDB.add(deviceDB);
+        deviceBox.put(surroundingID, devicesDB);
+        return true;
       }
     }catch(error, stack) {
       log('Error in creating Environment $error');
       log('Stack trace $stack');
+      return false;
     };
+    return false;
   }
 
   @override
@@ -66,7 +83,7 @@ class NewDeviceRepositoryImpl extends NewDeviceRepository {
   }
 
   @override
-  void createSurrounding(String surroundingName, String environmentId) async {
+  Future<Surrounding?> createSurrounding(String surroundingName, String environmentId) async {
     try {
       Map<String, dynamic> requestMap = {
         'name': surroundingName,
@@ -81,11 +98,14 @@ class NewDeviceRepositoryImpl extends NewDeviceRepository {
         final List<Surrounding> surroundingsDB = surroundingBox.get(surroundingKey, defaultValue: List.empty(growable: true));
         surroundingsDB.add(surroundingDB);
         surroundingBox.put(surroundingKey, surroundingsDB);
+        return surroundingDB;
       }
     }catch(error, stack) {
       log('Error in creating Environment $error');
       log('Stack trace $stack');
+      return null;
     }
+    return null;
   }
 
 }

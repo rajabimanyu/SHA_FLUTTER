@@ -522,4 +522,23 @@ class MockResponseData {
     "name": "bedroom"
 }
   ''';
+
+  static const createDeviceResponse = '''
+  {
+    "environmentID": "environmentc2e0e555-9dff-468a-9c7f-a866c3cfd430",
+    "surroundingID": "surrounding1611f5eb-54d5-410e-9cbe-7294111a6d33",
+    "id": "deviceTerrace",
+    "things": [
+      {
+        "environmentID": "environmentc2e0e555-9dff-468a-9c7f-a866c3cfd430",
+        "id": "thing75d07515-8370-4e50-94b6-c74232f3799d",
+        "thingType": "PLUG",
+        "status": "OFF",
+        "totalStep": 5,
+        "currentStep": 2,
+        "lastUpdatedTime": 1693044552412,
+        "deviceID": "deviceFirst"
+      }
+    ]
+  }''';
 }

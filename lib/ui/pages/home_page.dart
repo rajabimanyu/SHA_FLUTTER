@@ -8,11 +8,13 @@ import 'package:sha/core/model/ui_state.dart';
 import 'package:sha/models/environment.dart';
 import 'package:sha/models/surrounding.dart';
 import 'package:sha/route/routes.dart';
-import 'package:sha/ui/cubit/HomeCubit.dart';
+import 'package:sha/ui/bloc/HomeCubit.dart';
 import 'package:sha/ui/views/home_page_drawer.dart';
 import 'package:sha/ui/views/surrounding.dart';
 import 'package:sha/ui/views/tab_home.dart';
 import 'package:sizer/sizer.dart';
+
+import '../bloc/HomeCubit.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -27,7 +29,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   @override
   void initState() {
     super.initState();
-    homeCubit = HomeCubit(getIt.get(), getIt.get());
+    homeCubit = HomeCubit(getIt.get());
     homeCubit.fetchHomeData();
   }
 

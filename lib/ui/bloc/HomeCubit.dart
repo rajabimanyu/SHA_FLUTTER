@@ -13,11 +13,9 @@ import '../../models/environment.dart';
 
 class HomeCubit extends Cubit<UIState> {
   final HomeRepository _environmentsRespository;
-  final SurroundingsRepository _surroundingsRepository;
 
   HomeCubit(
-      this._environmentsRespository,
-      this._surroundingsRepository
+      this._environmentsRespository
   ): super(InitialState());
 
   void fetchHomeData() async {

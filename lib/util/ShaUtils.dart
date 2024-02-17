@@ -2,13 +2,6 @@ import "dart:async";
 
 import 'package:sha/base/ShaConstants.dart';
 
-/// Listens to [source] to returned stream.
-///
-/// Each listener on the returned stream receives the most recent
-/// event sent on [source] followed by all further events of [source]
-/// until they stop listening.
-/// If there has been no events on [source] yet, only the further events
-/// are forwarded.
 Stream<T> mostRecentStream<T>(Stream<T> source) {
   var isDone = false;
   var hasEvent = false;
