@@ -11,7 +11,7 @@ import 'package:sha/base/di/inject_config.dart';
 import 'package:sha/models/device.dart';
 import 'package:sha/models/surrounding.dart';
 import 'package:sha/models/thing.dart';
-import 'package:sha/ui/cubit/devices_cubit.dart';
+import 'package:sha/ui/bloc/devices_cubit.dart';
 import 'package:sha/ui/views/LightSwitch.dart';
 import 'package:sha/ui/views/bulb_switch.dart';
 import 'package:sha/ui/views/fan_switch.dart';

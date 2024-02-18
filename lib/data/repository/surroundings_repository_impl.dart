@@ -16,13 +16,10 @@ class SurroundingsRepositoryImpl extends SurroundingsRepository {
   SurroundingsRepositoryImpl();
 
   @override
-  Future<List<Surrounding>> fetchSurroundings() async {
+  Future<List<Surrounding>> fetchSurroundings(String currentEnvironmentId) async {
     try {
       Box surroundingsBox = await Hive.openBox(HIVE_SURROUNDING_BOX);
-      Box environmentsBox = await Hive.openBox(HIVE_ENVIRONMENT_BOX);
-      final List<envDB.Environment> environments = environmentsBox.get(HIVE_ENVIRONMENTS, defaultValue: List.empty(growable: false));
-      envDB.Environment currentEnvironment = environments.firstWhere((element) => element.isCurrentEnvironment);
-      final List<Surrounding> surroundings = surroundingsBox.get(getSurroundingKey(currentEnvironment.uuid));
+      final List<Surrounding> surroundings = surroundingsBox.get(getSurroundingKey(currentEnvironmentId));
       return surroundings;
     } catch(e, stack) {
       log('error in fetching surroundings ${e.toString()}');

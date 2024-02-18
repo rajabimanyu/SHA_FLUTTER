@@ -2,5 +2,5 @@
 import 'package:sha/models/surrounding.dart';
 
 abstract class SurroundingsRepository {
-  Future<List<Surrounding>> fetchSurroundings();
+  Future<List<Surrounding>> fetchSurroundings(String currentEnvironmentId);
 }

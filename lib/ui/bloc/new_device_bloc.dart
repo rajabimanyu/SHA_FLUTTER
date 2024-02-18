@@ -14,13 +14,13 @@ import 'package:sha/util/ShaUtils.dart';
 import '../../data/repository/device_repository.dart';
 
 class NewDeviceBloc extends Bloc<CreateEvent, CreateState> {
-  final SurroundingsRepository surroundingsRepository;
-  final DeviceRepository deviceRepository;
-  final HomeRepository homeRepository;
+  final SurroundingsRepository _surroundingsRepository;
+  final DeviceRepository _deviceRepository;
+  final HomeRepository _homeRepository;
   NewDeviceBloc(
-      this.surroundingsRepository,
-      this.deviceRepository,
-      this.homeRepository
+      this._surroundingsRepository,
+      this._deviceRepository,
+      this._homeRepository
       ): super(const InitialState()) {
     on<InitNewDeviceEvent>(_fetchSurroundings);
     on<CreateDeviceEvent>(_createDevice);
@@ -29,18 +29,19 @@ class NewDeviceBloc extends Bloc<CreateEvent, CreateState> {
 
   Future<void> _fetchSurroundings(InitNewDeviceEvent event, Emitter<CreateState> emit) async {
     try {
-      final List<Surrounding> surroundings =await surroundingsRepository.fetchSurroundings();
+      final Environment currentEnvironment = await _homeRepository.getCurrentEnvironment(Environment(uuid: '', name: '', isCurrentEnvironment: false));
+      final List<Surrounding> surroundings =await _surroundingsRepository.fetchSurroundings(currentEnvironment.uuid);
       emit(InitCreateDeviceState(surroundings));
     } catch(e, stack) {
       log('error in fetching surroundings ${e.toString()}');
       log('error in fetching surroundings stacktrace ${stack.toString()}');
     }
   }
-
+// 9894088889
   Future<void> _createDevice(CreateDeviceEvent event, Emitter<CreateState> emit) async {
     try {
-      final Environment currentEnvironment = await homeRepository.getCurrentEnvironment(Environment(uuid: '', name: '', isCurrentEnvironment: false));
-      final isDeviceCreated = await deviceRepository.createDevice(event.deviceId, currentEnvironment.uuid, event.surroundingId);
+      final Environment currentEnvironment = await _homeRepository.getCurrentEnvironment(Environment(uuid: '', name: '', isCurrentEnvironment: false));
+      final isDeviceCreated = await _deviceRepository.createDevice(event.deviceId, currentEnvironment.uuid, event.surroundingId);
       if(isDeviceCreated) {
         emit(CreateDeviceState(true));
       } else {
@@ -54,10 +55,10 @@ class NewDeviceBloc extends Bloc<CreateEvent, CreateState> {
 
   Future<void> _createSurroundingAndDevice(CreateSurroundingWithDeviceEvent event, Emitter<CreateState> emit) async {
     try {
-      final Environment currentEnvironment = await homeRepository.getCurrentEnvironment(Environment(uuid: '', name: '', isCurrentEnvironment: false));
-      final surrounding = await deviceRepository.createSurrounding(event.surroundingName, currentEnvironment.uuid);
+      final Environment currentEnvironment = await _homeRepository.getCurrentEnvironment(Environment(uuid: '', name: '', isCurrentEnvironment: false));
+      final surrounding = await _deviceRepository.createSurrounding(event.surroundingName, currentEnvironment.uuid);
       if(surrounding != null) {
-        final isDeviceCreated = await deviceRepository.createDevice(event.deviceId, currentEnvironment.uuid, surrounding.uuid);
+        final isDeviceCreated = await _deviceRepository.createDevice(event.deviceId, currentEnvironment.uuid, surrounding.uuid);
         if(isDeviceCreated) {
           emit(CreateDeviceState(true));
         } else {

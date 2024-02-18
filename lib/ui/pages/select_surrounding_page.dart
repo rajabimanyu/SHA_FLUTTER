@@ -9,7 +9,9 @@ import 'package:sha/base/boxes.dart';
 import 'package:sha/base/di/inject_config.dart';
 import 'package:sha/models/environment.dart';
 import 'package:sha/models/surrounding.dart';
-import 'package:sha/ui/bloc/NewDeviceBloc.dart';
+import 'package:sha/ui/bloc/events/create_device_events.dart';
+import 'package:sha/ui/bloc/new_device_bloc.dart';
+import 'package:sha/ui/bloc/states/create_device_state.dart';
 import 'package:sha/util/ShaUtils.dart';
 import 'package:sizer/sizer.dart';
 
@@ -24,12 +26,9 @@ class SelectSurroundingPage extends StatefulWidget {
 
 class _SelectSurroundingState extends State<SelectSurroundingPage> {
   String? codeData;
-  late NewDeviceBloc _newDeviceBloc;
   @override
   void initState() {
     super.initState();
-    _newDeviceBloc = NewDeviceBloc(getIt.get(), getIt.get(), getIt.get());
-    _newDeviceBloc.fetchSurroundings();
   }
 
   @override
@@ -47,6 +46,15 @@ class _SelectSurroundingState extends State<SelectSurroundingPage> {
           children: [
             Expanded(
               child: _buildSurroundingWidget(),
+            ),
+            ListTile(
+              //contentPadding: EdgeInsets.all(<some value here>),//change for side padding
+              title: Row(
+                children: <Widget>[
+                  Expanded(child: ElevatedButton(onPressed: () {},child: Text("Clear"), style: Theme.of(context).elevatedButtonTheme.style)),
+                  Expanded(child: ElevatedButton(onPressed: () {},child: Text("Filter"),style: Theme.of(context).elevatedButtonTheme.style))
+                ],
+              ),
             )
           ],
         ),
@@ -56,12 +64,12 @@ class _SelectSurroundingState extends State<SelectSurroundingPage> {
 
   Widget _buildSurroundingWidget() {
     return BlocProvider(
-      create: (_) => _newDeviceBloc,
-      child: BlocListener<NewDeviceBloc, UIState> (
+      create: (_) => NewDeviceBloc(getIt.get(), getIt.get(), getIt.get())..add(const InitNewDeviceEvent()),
+      child: BlocListener<NewDeviceBloc, CreateState> (
         listener: (context, state) {},
-        child: BlocBuilder<NewDeviceBloc, UIState>(builder: (context, state) {
-          if(state is SuccessState) { 
-            List<Surrounding> surroundings = state.data;
+        child: BlocBuilder<NewDeviceBloc, CreateState>(builder: (context, state) {
+          if(state is InitCreateDeviceState) {
+            List<Surrounding> surroundings = state.surroundings;
             log('all surr = ${surroundings}');
             return ListView.builder(
                 itemCount: surroundings.length,

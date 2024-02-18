@@ -4,7 +4,7 @@ import 'dart:developer';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:sha/ui/cubit/HomeCubit.dart';
+import 'package:sha/ui/bloc/HomeCubit.dart';
 import 'package:sha/ui/views/surrounding.dart';
 
 import '../../core/model/ui_state.dart';
