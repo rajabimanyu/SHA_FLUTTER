@@ -39,6 +39,7 @@ class HomeRepositoryImpl implements HomeRepository {
     try {
       log("fetchenvapi");
       Box environmentsBox = await Hive.openBox(HIVE_ENVIRONMENT_BOX);
+      log("after box");
       final ApiResponse<List<env.Environment>, NetworkError> envResponse = await _service.getEnvList();
       if(envResponse.success) {
         List<env.Environment> environments = envResponse.data ?? List.empty(growable: false);
@@ -47,17 +48,14 @@ class HomeRepositoryImpl implements HomeRepository {
           final currentEnvironment = await getCurrentEnvironment(envDBModel.Environment(uuid: environments[0].id, name: environments[0].name, isCurrentEnvironment: true));
           final List<envDBModel.Environment> environmentsDB = environments.map((e) => envDBModel.Environment(uuid: e.id, name: e.name, isCurrentEnvironment: currentEnvironment.uuid == e.id)).toList();
           await environmentsBox.put(HIVE_ENVIRONMENTS, environmentsDB);
-          environmentsBox.close();
           return environmentsDB;
         }
       } else {
         if(environmentsBox.containsKey(HIVE_ENVIRONMENTS)) {
           final List<envDBModel.Environment> finalEnvironments = environmentsBox.get(HIVE_ENVIRONMENTS)?.cast<envDBModel.Environment>();
-          environmentsBox.close();
           return finalEnvironments;
         }
       }
-      environmentsBox.close();
     } catch (e, stack) {
       print("exception in fetchEnv : $e");
       print("stacktrace : $stack");
@@ -73,11 +71,9 @@ class HomeRepositoryImpl implements HomeRepository {
       final envDBModel.Environment currentEnvironment = environments.firstWhere(
               (element) => element.isCurrentEnvironment == true, orElse: () => defaultCurrentEnvironment
       );
-      environmentsBox.close();
       return currentEnvironment;
     }
 
-    environmentsBox.close();
     return defaultCurrentEnvironment;
   }
 
@@ -102,11 +98,9 @@ class HomeRepositoryImpl implements HomeRepository {
         } else {
           if(surroundingsBox.containsKey(getSurroundingKey(currentEnvironment.uuid))) {
             final List<surroundingDBModel.Surrounding> finalSurroundings = surroundingsBox.get(getSurroundingKey(currentEnvironment.uuid))?.cast<surroundingDBModel.Surrounding>();
-            surroundingsBox.close();
             return finalSurroundings;
           }
         }
-        surroundingsBox.close();
       }
     } catch (e, stack) {
       log("exception in homedata $stack");
