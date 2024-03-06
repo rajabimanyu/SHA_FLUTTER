@@ -37,7 +37,7 @@ class NewDeviceBloc extends Bloc<CreateEvent, CreateState> {
       log('error in fetching surroundings stacktrace ${stack.toString()}');
     }
   }
-// 9894088889
+
   Future<void> _createDevice(CreateDeviceEvent event, Emitter<CreateState> emit) async {
     try {
       final Environment currentEnvironment = await _homeRepository.getCurrentEnvironment(Environment(uuid: '', name: '', isCurrentEnvironment: false));

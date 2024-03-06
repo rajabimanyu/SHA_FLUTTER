@@ -14,7 +14,6 @@ final class CreateDeviceEvent extends CreateEvent {
 
 final class CreateSurroundingWithDeviceEvent extends CreateEvent {
   final String deviceId;
-  final String environmrentId;
   final String surroundingName;
-  const CreateSurroundingWithDeviceEvent(this.deviceId, this.environmrentId, this.surroundingName);
+  const CreateSurroundingWithDeviceEvent(this.deviceId, this.surroundingName);
 }

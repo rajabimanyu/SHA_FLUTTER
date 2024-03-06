@@ -25,8 +25,9 @@ class SelectSurroundingPage extends StatefulWidget {
 }
 
 class _SelectSurroundingState extends State<SelectSurroundingPage> {
-  String? codeData;
+  String codeData = '';
   int selectedIndex = 0;
+  String selectedSurroundingId = "";
   @override
   void initState() {
     super.initState();
@@ -34,46 +35,12 @@ class _SelectSurroundingState extends State<SelectSurroundingPage> {
 
   @override
   Widget build(BuildContext context) {
-    codeData = ModalRoute.of(context)?.settings.arguments as String?;
+    codeData = ModalRoute.of(context)?.settings.arguments as String? ?? '';
     log("qr data : $codeData");
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Select a Surrounding'), actions: <Widget>[
-          IconButton(
-            icon: Icon(
-              Icons.add,
-              color: Theme.of(context).iconTheme.color
-            ),
-            onPressed: () {
-              _displayTextInputDialog(context);
-            },
-          )
-        ]),
-        body: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 16),
-        alignment: Alignment.centerLeft,
-        child: Column(
-          children: [
-            Expanded(
-              child: _buildSurroundingWidget(),
-            ),
-            Padding(
-              padding: const EdgeInsets.only(bottom: 8),
-              child: SizedBox(
-                  width: double.infinity,
-                  height: 50,
-                  child: ElevatedButton(onPressed: () {}, style: Theme.of(context).elevatedButtonTheme.style, child: const Text('Create Surrounding'))
-              )),
-            Padding(
-              padding: const EdgeInsets.only(bottom: 8),
-              child: SizedBox(
-                  width: double.infinity,
-                  height: 50,
-                  child: ElevatedButton(onPressed: () {}, style: Theme.of(context).elevatedButtonTheme.style, child: const Text('Proceed'))
-            ))
-          ],
-        ),
-      )
+        title: const Text('Select a Surrounding')),
+        body: _buildSurroundingWidget()
     );
   }
 
@@ -83,73 +50,105 @@ class _SelectSurroundingState extends State<SelectSurroundingPage> {
       child: BlocListener<NewDeviceBloc, CreateState> (
         listener: (context, state) {},
         child: BlocBuilder<NewDeviceBloc, CreateState>(builder: (context, state) {
-          log('all bloc');
-          if(state is InitCreateDeviceState) {
-            List<Surrounding> surroundings = state.surroundings;
-            surroundings.add(Surrounding(uuid: "1",name: "value 1"));
-            surroundings.add(Surrounding(uuid: "2",name: "value 2"));
-            surroundings.add(Surrounding(uuid: "3",name: "value 3"));
-            surroundings.add(Surrounding(uuid: "4",name: "value 4"));
-            surroundings.add(Surrounding(uuid: "5",name: "value 5"));
-            surroundings.add(Surrounding(uuid: "6",name: "value 6"));
-            surroundings.add(Surrounding(uuid: "7",name: "value 7"));
-            surroundings.add(Surrounding(uuid: "8",name: "value 8"));
-            surroundings.add(Surrounding(uuid: "9",name: "value 9"));
-            surroundings.add(Surrounding(uuid: "10",name: "value 10"));
-            log('all surr = ${surroundings}');
-            return ListView.builder(
-                itemCount: surroundings.length,
-                itemBuilder: (BuildContext context, int position) {
-                  log('spec surr = ${surroundings[position].name} & $selectedIndex');
-                  return  GestureDetector(
-                    onTap: () {
-                      setState(() {
-                        selectedIndex = position;
-                      });
-                    },
-                    child:Container(
-                      alignment: Alignment.center,
-                      height: 50,
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            surroundings[position].name,
-                            style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 20
-                            ),
-                          ),
-                          if(selectedIndex == position) Icon(
-                            Icons.done,
-                            color: Colors.blue,
-                            size: 32,
-                          )
-                        ],
-                      ),
-                    )
-                  );
-                });
-          } else if(state is FailureState) {
-            return Container(
-              width: double.infinity,
-              height: double.infinity,
-              alignment: Alignment.center,
-              child: Text(
-                "Something went wrong. Please try again later.",
-                style: TextStyle(fontSize: 11.sp),
-              ),
-            );
-          } else {
-            return Container(
-              width: double.infinity,
-              height: double.infinity,
-              alignment: Alignment.center,
-              child: const CircularProgressIndicator(),
-            );
-          }
+          return Container(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            alignment: Alignment.centerLeft,
+            child: Column(
+              children: [
+                Expanded(
+                  child: _surroundingListWidget(state),
+                ),
+                Padding(
+                    padding: const EdgeInsets.only(bottom: 8),
+                    child: SizedBox(
+                        width: double.infinity,
+                        height: 50,
+                        child: ElevatedButton(onPressed: () {
+                          _showLoaderDialog(context);
+                          context.read<NewDeviceBloc>().add(CreateDeviceEvent(selectedSurroundingId, codeData));
+
+                        }, style: Theme.of(context).elevatedButtonTheme.style, child: const Text('Proceed'))
+                    ))
+              ],
+            ),
+          );
         })
       ));
+  }
+  
+  Widget _surroundingListWidget(CreateState state) {
+    log('all bloc');
+    if(state is InitCreateDeviceState) {
+      List<Surrounding> surroundings = state.surroundings;
+      log('all surr = ${surroundings}');
+      return ListView.builder(
+          itemCount: surroundings.length,
+          itemBuilder: (BuildContext context, int position) {
+            log('spec surr = ${surroundings[position].name} & $selectedIndex');
+            return  GestureDetector(
+                onTap: () {
+                  setState(() {
+                    selectedIndex = position;
+                  });
+                  selectedSurroundingId = surroundings[position].uuid;
+                },
+                child:Container(
+                  alignment: Alignment.center,
+                  height: 50,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Expanded(child: Text(
+                          surroundings[position].name,
+                          style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 20
+                          )),
+                      ),
+                      if(selectedIndex == position) Icon(
+                        Icons.done,
+                        color: Colors.blue,
+                        size: 32,
+                      )
+                    ],
+                  ),
+                )
+            );
+          });
+    } else if(state is FailureState) {
+      return Container(
+        width: double.infinity,
+        height: double.infinity,
+        alignment: Alignment.center,
+        child: Text(
+          "Something went wrong. Please try again later.",
+          style: TextStyle(fontSize: 11.sp),
+        ),
+      );
+    } else {
+      return Container(
+        width: double.infinity,
+        height: double.infinity,
+        alignment: Alignment.center,
+        child: const CircularProgressIndicator(),
+      );
+    }
+  }
+
+  _showLoaderDialog(BuildContext context){
+    AlertDialog alert=AlertDialog(
+      content: Row(
+        children: [
+          CircularProgressIndicator(),
+          Container(margin: EdgeInsets.only(left: 20),child:Text("Processing..." )),
+        ],),
+    );
+    showDialog(barrierDismissible: false,
+      context:context,
+      builder:(BuildContext context){
+        return alert;
+      },
+    );
   }
 
   final TextEditingController _textFieldController = TextEditingController();
@@ -160,7 +159,7 @@ class _SelectSurroundingState extends State<SelectSurroundingPage> {
         context: context,
         builder: (context) {
           return AlertDialog(
-            title: const Text('Create new surrounding'),
+            title: const Text('Create new surrounding & map device'),
             content: TextField(
               onChanged: (value) {
                 setState(() {
@@ -189,8 +188,8 @@ class _SelectSurroundingState extends State<SelectSurroundingPage> {
                 onPressed: () {
                   setState(() {
                     codeDialog = valueText;
-                    Navigator.pop(context);
                   });
+                  BlocProvider.of<NewDeviceBloc>(context).add(CreateSurroundingWithDeviceEvent(valueText ?? '', codeData ?? ''));
                 },
               ),
             ],
