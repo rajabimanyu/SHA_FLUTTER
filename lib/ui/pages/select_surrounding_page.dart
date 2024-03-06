@@ -9,6 +9,7 @@ import 'package:sha/base/boxes.dart';
 import 'package:sha/base/di/inject_config.dart';
 import 'package:sha/models/environment.dart';
 import 'package:sha/models/surrounding.dart';
+import 'package:sha/route/routes.dart';
 import 'package:sha/ui/bloc/events/create_device_events.dart';
 import 'package:sha/ui/bloc/new_device_bloc.dart';
 import 'package:sha/ui/bloc/states/create_device_state.dart';
@@ -66,7 +67,7 @@ class _SelectSurroundingState extends State<SelectSurroundingPage> {
                         child: ElevatedButton(onPressed: () {
                           _showLoaderDialog(context);
                           context.read<NewDeviceBloc>().add(CreateDeviceEvent(selectedSurroundingId, codeData));
-
+                          Navigator.of(context).pushNamed(ShaRoutes.connectDeviceRoute);
                         }, style: Theme.of(context).elevatedButtonTheme.style, child: const Text('Proceed'))
                     ))
               ],

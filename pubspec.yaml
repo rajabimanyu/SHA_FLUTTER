@@ -47,6 +47,7 @@ dependencies:
   hive_flutter:
   internet_connection_checker: ^1.0.0+1
   rxdart: ^0.27.7
+  wifi_scan: ^0.4.1
 
 
 
