@@ -57,8 +57,15 @@ class _QrScannerPageState extends State<QrScannerPage>
             height: 56,
             child: ElevatedButton(
               onPressed: () {
-                Navigator.of(context).pop();
-                Navigator.of(context).popAndPushNamed(ShaRoutes.addDeviceRoute);
+                if(true) {
+                  Navigator.of(context).pop();
+                  Navigator.of(context).popAndPushNamed(
+                      ShaRoutes.registerNewEnvRoute);
+                } else {
+                  Navigator.of(context).pop();
+                  Navigator.of(context).popAndPushNamed(
+                      ShaRoutes.addDeviceRoute);
+                }
               },
               style: ButtonStyle(
                 backgroundColor: MaterialStatePropertyAll(
@@ -102,7 +109,11 @@ class _QrScannerPageState extends State<QrScannerPage>
           final codeData = barcodes[0].rawValue;
           log('Barcode scanned => ${codeData}');
           if(codeData != null) {
-            Navigator.of(context).popAndPushNamed(ShaRoutes.addDeviceRoute, arguments: codeData);
+            if(true) {
+              Navigator.of(context).popAndPushNamed(ShaRoutes.registerNewEnvRoute);
+            } else {
+              Navigator.of(context).popAndPushNamed(ShaRoutes.addDeviceRoute, arguments: codeData);
+            }
           }
           // for (final barcode in barcodes) {
           //   debugPrint('Barcode scanned => ${barcode.rawValue}');

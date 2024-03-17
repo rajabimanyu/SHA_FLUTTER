@@ -48,7 +48,7 @@ class DeviceRepositoryImpl extends DeviceRepository {
             currentStep: int.parse(t.currentStep),
             lastUpdatedTime: t.lastUpdatedTime
         )).toList());
-        final List<deviceDBModel.Device> devicesDB = deviceBox.get(surroundingID, defaultValue: List.empty(growable: true));
+        final List<deviceDBModel.Device> devicesDB = deviceBox.get(surroundingID, defaultValue: List.empty(growable: true))?.cast<deviceDBModel.Device>();
         devicesDB.add(deviceDB);
         deviceBox.put(surroundingID, devicesDB);
         return true;
@@ -59,27 +59,6 @@ class DeviceRepositoryImpl extends DeviceRepository {
       return false;
     };
     return false;
-  }
-
-  @override
-  void createEnvironment(String envName) async {
-    try {
-      Box envBox = await Hive.openBox(HIVE_ENVIRONMENT_BOX);
-      Map<String, dynamic> requestMap = {
-        'name': envName
-      };
-      final ApiResponse<env.Environment, NetworkError> envResponse = await _service.createEnvironment(requestMap);
-      if(envResponse.success) {
-        final environment = envResponse.data;
-        final environmentDB = envDBModel.Environment(uuid: environment?.id ?? "", name: environment?.name ?? "", isCurrentEnvironment: false);
-        final List<envDBModel.Environment> environmentsFromDB = envBox.get(HIVE_ENVIRONMENT_BOX, defaultValue: List.empty(growable: true));
-        environmentsFromDB.add(environmentDB);
-        envBox.put(HIVE_ENVIRONMENT_BOX, environmentsFromDB);
-      }
-    }catch(error, stack) {
-      log('Error in creating Environment $error');
-      log('Stack trace $stack');
-    };
   }
 
   @override

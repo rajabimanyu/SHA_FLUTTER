@@ -29,6 +29,10 @@ class _SelectSurroundingState extends State<SelectSurroundingPage> {
   String codeData = '';
   int selectedIndex = 0;
   String selectedSurroundingId = "";
+
+  final NewDeviceBloc newDeviceBlocInit = NewDeviceBloc(getIt.get(), getIt.get(), getIt.get());
+  final NewDeviceBloc newDeviceBlocCreateDevice = NewDeviceBloc(getIt.get(), getIt.get(), getIt.get());
+
   @override
   void initState() {
     super.initState();
@@ -47,35 +51,61 @@ class _SelectSurroundingState extends State<SelectSurroundingPage> {
 
   Widget _buildSurroundingWidget() {
     return BlocProvider(
-      create: (_) => NewDeviceBloc(getIt.get(), getIt.get(), getIt.get())..add(const InitNewDeviceEvent()),
+      create: (_) => NewDeviceBloc(getIt.get(), getIt.get(), getIt.get()),
       child: BlocListener<NewDeviceBloc, CreateState> (
-        listener: (context, state) {},
-        child: BlocBuilder<NewDeviceBloc, CreateState>(builder: (context, state) {
-          return Container(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            alignment: Alignment.centerLeft,
-            child: Column(
-              children: [
-                Expanded(
-                  child: _surroundingListWidget(state),
+        listener: (context, state) {
+          if(state is CreateDeviceState) {
+            if(state.isSuccessful)  {
+              Navigator.of(context).popAndPushNamed(ShaRoutes.connectDeviceRoute);
+            } else {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text('Some Error occured, Please try again'),
+                  backgroundColor: Theme.of(context).colorScheme.error,
                 ),
-                Padding(
-                    padding: const EdgeInsets.only(bottom: 8),
-                    child: SizedBox(
-                        width: double.infinity,
-                        height: 50,
-                        child: ElevatedButton(onPressed: () {
-                          _showLoaderDialog(context);
-                          context.read<NewDeviceBloc>().add(CreateDeviceEvent(selectedSurroundingId, codeData));
-                          Navigator.of(context).pushNamed(ShaRoutes.connectDeviceRoute);
-                        }, style: Theme.of(context).elevatedButtonTheme.style, child: const Text('Proceed'))
-                    ))
-              ],
-            ),
-          );
-        })
-      ));
+              );
+            }
+          }
+        },
+        child: BlocBuilder<NewDeviceBloc, CreateState>(
+          builder: (context, state) {
+            return Container(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              alignment: Alignment.centerLeft,
+              child: Column(
+                children: [
+                  Expanded(
+                      child: BlocProvider(create: (_) => newDeviceBlocInit..add(const InitNewDeviceEvent()),
+                          child: BlocListener<NewDeviceBloc, CreateState> (
+                              listener: (context, state) {}, child: BlocBuilder<NewDeviceBloc, CreateState>(
+                              bloc: newDeviceBlocInit,
+                              builder: (context, state) {
+                                log("came to second : $state");
+                                return _surroundingListWidget(state);
+                              })
+                          )
+                      )),
+                  Padding(
+                      padding: const EdgeInsets.only(bottom: 8),
+                      child: SizedBox(
+                          width: double.infinity,
+                          height: 50,
+                          child: ElevatedButton(onPressed: () {
+                            _showLoaderDialog(context);
+                            context.read<NewDeviceBloc>().add(CreateDeviceEvent(selectedSurroundingId, codeData));
+                          }, style: Theme.of(context).elevatedButtonTheme.style, child: const Text('Proceed'))
+                      ))
+                ],
+              ),
+            );
+          },
+        )
+           
+        )
+      );
   }
+
+
   
   Widget _surroundingListWidget(CreateState state) {
     log('all bloc');

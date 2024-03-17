@@ -30,7 +30,9 @@ class NewDeviceBloc extends Bloc<CreateEvent, CreateState> {
   Future<void> _fetchSurroundings(InitNewDeviceEvent event, Emitter<CreateState> emit) async {
     try {
       final Environment currentEnvironment = await _homeRepository.getCurrentEnvironment(Environment(uuid: '', name: '', isCurrentEnvironment: false));
+      log('currenbt env fou $currentEnvironment');
       final List<Surrounding> surroundings =await _surroundingsRepository.fetchSurroundings(currentEnvironment.uuid);
+      log('surr foun $surroundings');
       emit(InitCreateDeviceState(surroundings));
     } catch(e, stack) {
       log('error in fetching surroundings ${e.toString()}');
@@ -56,15 +58,15 @@ class NewDeviceBloc extends Bloc<CreateEvent, CreateState> {
   Future<void> _createSurroundingAndDevice(CreateSurroundingWithDeviceEvent event, Emitter<CreateState> emit) async {
     try {
       final Environment currentEnvironment = await _homeRepository.getCurrentEnvironment(Environment(uuid: '', name: '', isCurrentEnvironment: false));
-      final surrounding = await _deviceRepository.createSurrounding(event.surroundingName, currentEnvironment.uuid);
-      if(surrounding != null) {
-        final isDeviceCreated = await _deviceRepository.createDevice(event.deviceId, currentEnvironment.uuid, surrounding.uuid);
-        if(isDeviceCreated) {
-          emit(CreateDeviceState(true));
-        } else {
-          emit(CreateDeviceState(false));
-        }
-      }
+      // final surrounding = await _deviceRepository.createSurrounding(event.surroundingName, currentEnvironment.uuid);
+      // if(surrounding != null) {
+      //   final isDeviceCreated = await _deviceRepository.createDevice(event.deviceId, currentEnvironment.uuid, surrounding.uuid);
+      //   if(isDeviceCreated) {
+      //     emit(CreateDeviceState(true));
+      //   } else {
+      //     emit(CreateDeviceState(false));
+      //   }
+      // }
     } catch(e, stack) {
       log('error in creating Surrounding ${e.toString()}');
       log('error in creating Surrounding stacktrace ${stack.toString()}');

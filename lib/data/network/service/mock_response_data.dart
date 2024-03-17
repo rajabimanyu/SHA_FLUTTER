@@ -518,8 +518,8 @@ class MockResponseData {
   static const createSurroundingResponse = ''' 
 {
     "id": "surroundingc523e13b-d926-4218-b29b-7c41268ee2c4",
-    "environmentID": "environmentc2e0e555-9573-468a-9c7f-a866c3cfd430",
-    "name": "bedroom"
+    "environmentID": "environment4763acc7-2a24-4462-b2c2-cb47c7157ef7",
+    "name": "portico"
 }
   ''';
 

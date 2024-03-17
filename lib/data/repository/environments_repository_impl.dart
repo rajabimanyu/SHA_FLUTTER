@@ -11,6 +11,7 @@ import 'package:internet_connection_checker/internet_connection_checker.dart';
 import 'package:sha/core/model/ui_state.dart';
 import 'package:sha/data/network/service/models/Thing.dart';
 import 'package:sha/data/network/service/models/surrounding.dart' as surrounding;
+import 'package:sha/data/repository/data_response.dart';
 import 'package:sha/data/repository/environments_repository.dart';
 
 import 'package:sha/core/network/network_error.dart';
@@ -200,4 +201,34 @@ class HomeRepositoryImpl implements HomeRepository {
       print('$stack');
     }
   }
+
+  @override
+  Future<DataResponse<envDBModel.Environment, DataError>> createEnvironment(String envName) async {
+    try {
+      Box envBox = await Hive.openBox(HIVE_ENVIRONMENT_BOX);
+      Map<String, dynamic> requestMap = {
+        'name': envName
+      };
+      final ApiResponse<env.Environment, NetworkError> envResponse = await _service.createEnvironment(requestMap);
+      if(envResponse.success) {
+        final environment = envResponse.data;
+        if(environment != null) {
+          final environmentDB = envDBModel.Environment(uuid: environment.id ?? '', name: environment.name ?? '', isCurrentEnvironment: false);
+          final List<envDBModel.Environment> environmentsFromDB = envBox.get(HIVE_ENVIRONMENT_BOX, defaultValue: List.empty(growable: true));
+          environmentsFromDB.add(environmentDB);
+          envBox.put(HIVE_ENVIRONMENT_BOX, environmentsFromDB);
+          return DataResponse.completed(environmentDB);
+        }
+        return DataResponse.error(DataError(message: 'Env is null from API', dataErrorType: DataErrorType.CREATE_ENVIRONMENT_ERROR));
+      } else {
+        log('env creation failed : ${envResponse.error?.message}');
+        return DataResponse.error(DataError(message: envResponse.error?.message ?? 'Env creation failed', dataErrorType: DataErrorType.CREATE_ENVIRONMENT_ERROR));
+      }
+    }catch(error, stack) {
+      log('Error in creating Environment $error');
+      log('Stack trace $stack');
+      return DataResponse.error(DataError(message: stack.toString(), dataErrorType: DataErrorType.CREATE_ENVIRONMENT_ERROR));
+    }
+  }
+
 }
