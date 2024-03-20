@@ -15,7 +15,7 @@ class RegisterNewEnvPage extends StatefulWidget {
 class _RegisterNewEnvPageState extends State<RegisterNewEnvPage> {
   final TextEditingController _envTextController = TextEditingController();
   final TextEditingController _surTextController = TextEditingController();
-
+  String qrData = '';
   @override
   void dispose() {
     _envTextController.dispose();
@@ -27,6 +27,7 @@ class _RegisterNewEnvPageState extends State<RegisterNewEnvPage> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final textTheme = theme.textTheme;
+    qrData = ModalRoute.of(context)?.settings.arguments as String? ?? '';
     return BlocProvider(create: (_) => AddNewEnvironmentBloc(getIt.get(), getIt.get()),
       child: BlocListener<AddNewEnvironmentBloc, UIState> (
         listener: (context, state) {},
@@ -95,7 +96,7 @@ class _RegisterNewEnvPageState extends State<RegisterNewEnvPage> {
                         child: ElevatedButton(
                           onPressed: () {
                             if(_envTextController.value.text.isNotEmpty && _surTextController.value.text.isNotEmpty) {
-                              context.read<AddNewEnvironmentBloc>().createEnvironmentAndSurrounding(_envTextController.value.text, _surTextController.value.text);
+                              context.read<AddNewEnvironmentBloc>().createEnvironmentAndSurrounding(qrData, _envTextController.value.text, _surTextController.value.text);
                             }
                           },
                           child: Container(

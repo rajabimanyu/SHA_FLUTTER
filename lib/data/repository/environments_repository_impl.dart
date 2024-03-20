@@ -214,7 +214,7 @@ class HomeRepositoryImpl implements HomeRepository {
         final environment = envResponse.data;
         if(environment != null) {
           final environmentDB = envDBModel.Environment(uuid: environment.id ?? '', name: environment.name ?? '', isCurrentEnvironment: false);
-          final List<envDBModel.Environment> environmentsFromDB = envBox.get(HIVE_ENVIRONMENT_BOX, defaultValue: List.empty(growable: true));
+          final List<envDBModel.Environment> environmentsFromDB = envBox.get(HIVE_ENVIRONMENT_BOX, defaultValue: List.empty(growable: true)).cast<envDBModel.Environment>();
           environmentsFromDB.add(environmentDB);
           envBox.put(HIVE_ENVIRONMENT_BOX, environmentsFromDB);
           return DataResponse.completed(environmentDB);

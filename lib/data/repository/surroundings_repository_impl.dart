@@ -46,7 +46,7 @@ class SurroundingsRepositoryImpl extends SurroundingsRepository {
         final surroundingDB = surrdingDB.Surrounding(uuid: surroundingData?.id ?? '', name: surroundingData?.name ?? '');
         final Box surroundingBox = await Hive.openBox(HIVE_SURROUNDING_BOX);
         String surroundingKey = getSurroundingKey(environmentId);
-        final List<surrdingDB.Surrounding> surroundingsDB = surroundingBox.get(surroundingKey, defaultValue: List.empty(growable: true));
+        final List<surrdingDB.Surrounding> surroundingsDB = surroundingBox.get(surroundingKey, defaultValue: List.empty(growable: true)).cast<surrdingDB.Surrounding>();
         surroundingsDB.add(surroundingDB);
         surroundingBox.put(surroundingKey, surroundingsDB);
         return DataResponse.completed(surroundingDB);

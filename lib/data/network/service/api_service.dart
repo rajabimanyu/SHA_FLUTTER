@@ -99,7 +99,7 @@ class ApiService {
       bool isSuccess = jsonResponse['success'];
       if(isSuccess) {
         var data = jsonResponse['data'];
-        final env.Environment result = data.map((e) => env.Environment.fromJson(e));
+        final env.Environment result = env.Environment.fromJson(data);
         return ApiResponse.completed(result);
       } else {
         return ApiResponse.error(_defaultError);

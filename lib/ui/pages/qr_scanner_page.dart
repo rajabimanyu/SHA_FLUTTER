@@ -1,9 +1,14 @@
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 
+import '../../base/di/inject_config.dart';
+import '../../core/model/ui_state.dart';
 import '../../route/routes.dart';
+import '../bloc/add_env_cubit.dart';
+import '../bloc/qr_code_scanner_cubit.dart';
 
 class QrScannerPage extends StatefulWidget {
   const QrScannerPage({super.key});
@@ -87,49 +92,50 @@ class _QrScannerPageState extends State<QrScannerPage>
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      floatingActionButton: FloatingActionButton(
-        onPressed: () => _cameraController.toggleTorch(),
-        child: ValueListenableBuilder(
-          valueListenable: _cameraController.torchState,
-          builder: (context, state, chile) {
-            switch (state) {
-              case TorchState.off:
-                return const Icon(Icons.flashlight_off);
-              case TorchState.on:
-                return const Icon(Icons.flashlight_on);
-            }
-          },
-        ),
-      ),
-      body: MobileScanner(
-        controller: _cameraController,
-        onDetect: (capture) {
-          final barcodes = capture.barcodes;
-          final codeData = barcodes[0].rawValue;
-          log('Barcode scanned => ${codeData}');
-          if(codeData != null) {
-            if(true) {
-              Navigator.of(context).popAndPushNamed(ShaRoutes.registerNewEnvRoute);
+    String? qrData = '';
+    return  BlocProvider(create: (_) => QrCodeScannerCubit(getIt.get()),
+      child: BlocListener<QrCodeScannerCubit, UIState> (
+        listener: (context, state) {
+          if(state is SuccessState) {
+            bool isEnvironmentAvailable = state.data;
+            if(isEnvironmentAvailable) {
+              Navigator.of(context).popAndPushNamed(ShaRoutes.addDeviceRoute, arguments: qrData);
             } else {
-              Navigator.of(context).popAndPushNamed(ShaRoutes.addDeviceRoute, arguments: codeData);
+              Navigator.of(context).popAndPushNamed(ShaRoutes.registerNewEnvRoute,  arguments: qrData);
             }
           }
-          // for (final barcode in barcodes) {
-          //   debugPrint('Barcode scanned => ${barcode.rawValue}');
-          //   if (barcode.rawValue?.isNotEmpty == true) {
-          //     showModalBottomSheet(
-          //       enableDrag: true,
-          //       transitionAnimationController:
-          //           BottomSheet.createAnimationController(this),
-          //       context: context,
-          //       builder: (context) {
-          //         return _buildResultBottomSheet(barcode.rawValue!);
-          //       },
-          //     );
-          //   }
-          // }
         },
+        child: BlocBuilder<QrCodeScannerCubit, UIState>(
+          builder: (context, state) {
+            return Scaffold(
+              floatingActionButton: FloatingActionButton(
+                onPressed: () => _cameraController.toggleTorch(),
+                child: ValueListenableBuilder(
+                  valueListenable: _cameraController.torchState,
+                  builder: (context, state, chile) {
+                    switch (state) {
+                      case TorchState.off:
+                        return const Icon(Icons.flashlight_off);
+                      case TorchState.on:
+                        return const Icon(Icons.flashlight_on);
+                    }
+                  },
+                ),
+              ),
+              body: MobileScanner(
+                controller: _cameraController,
+                onDetect: (capture) {
+                  final barcodes = capture.barcodes;
+                  qrData = barcodes[0].rawValue;
+                  log('Barcode scanned => ${qrData}');
+                  if(qrData != null) {
+                    context.read<QrCodeScannerCubit>().fetchEnvironments();
+                  }
+                },
+              ),
+            );
+          },
+        ),
       ),
     );
   }
