@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sha/core/model/ui_state.dart';
 import 'package:sha/ui/bloc/add_env_cubit.dart';
+import 'package:sha/ui/views/loader.dart';
 
 import '../../base/di/inject_config.dart';
+import '../../route/routes.dart';
 
 class RegisterNewEnvPage extends StatefulWidget {
   const RegisterNewEnvPage({super.key});
@@ -28,9 +30,29 @@ class _RegisterNewEnvPageState extends State<RegisterNewEnvPage> {
     final theme = Theme.of(context);
     final textTheme = theme.textTheme;
     qrData = ModalRoute.of(context)?.settings.arguments as String? ?? '';
-    return BlocProvider(create: (_) => AddNewEnvironmentBloc(getIt.get(), getIt.get()),
+    return BlocProvider(create: (_) => AddNewEnvironmentBloc(getIt.get(), getIt.get(), getIt.get()),
       child: BlocListener<AddNewEnvironmentBloc, UIState> (
-        listener: (context, state) {},
+        listener: (context, state) {
+          if(state is SuccessState) {
+            if(state.data == 1 || state.data == 3)  {
+              Navigator.of(context).popAndPushNamed(ShaRoutes.connectDeviceRoute);
+            } else if(state.data == 2){
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text('Some Error occured, Please try again'),
+                  backgroundColor: Theme.of(context).colorScheme.error,
+                ),
+              );
+            }
+          } else if(state is FailureState) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text('Some Error occured, Please try again'),
+                backgroundColor: Theme.of(context).colorScheme.error,
+              ),
+            );
+          }
+        },
         child: BlocBuilder<AddNewEnvironmentBloc, UIState>(
           builder: (context, state) {
             return SafeArea(
@@ -98,6 +120,7 @@ class _RegisterNewEnvPageState extends State<RegisterNewEnvPage> {
                             if(_envTextController.value.text.isNotEmpty && _surTextController.value.text.isNotEmpty) {
                               context.read<AddNewEnvironmentBloc>().createEnvironmentAndSurrounding(qrData, _envTextController.value.text, _surTextController.value.text);
                             }
+                            showLoaderDialog(context);
                           },
                           child: Container(
                             width: double.infinity,

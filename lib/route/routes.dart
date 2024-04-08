@@ -10,4 +10,6 @@ class ShaRoutes {
   static const String notificationsPageRoute = '/notifications';
   static const String registerNewEnvRoute = '/register_new_env';
   static const String connectDeviceRoute = '/connect_device';
+  static const String addHomePageRoute = '/addHome';
+  static const String addSurroundingPageRoute = '/addSurrounding';
 }

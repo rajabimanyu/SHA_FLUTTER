@@ -50,6 +50,20 @@ class HomePageDrawer extends StatelessWidget {
             ),
             const SliverToBoxAdapter(
               child: DrawerItem(
+                title: 'Add Home',
+                iconData: Icons.add_home,
+                navigateToRoute: ShaRoutes.addHomePageRoute,
+              ),
+            ),
+            const SliverToBoxAdapter(
+              child: DrawerItem(
+                title: 'Add Surroundings',
+                iconData: Icons.window_outlined,
+                navigateToRoute: ShaRoutes.addSurroundingPageRoute,
+              ),
+            ),
+            const SliverToBoxAdapter(
+              child: DrawerItem(
                 title: 'Settings',
                 iconData: Icons.settings,
                 navigateToRoute: ShaRoutes.settingsPageRoute,

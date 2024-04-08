@@ -9,6 +9,7 @@ import 'package:sha/core/network/api_services.dart';
 import 'package:sha/core/network/network_error.dart';
 import 'package:sha/core/network/response.dart';
 import 'package:sha/data/network/service/mock_response_data.dart';
+import 'package:sha/data/network/service/models/CreateDevice.dart';
 import 'package:sha/data/network/service/models/Device.dart';
 import 'package:sha/data/network/service/models/Environment.dart' as env;
 import 'package:sha/data/network/service/models/Thing.dart';
@@ -126,13 +127,13 @@ class ApiService {
     }
   }
 
-  Future<ApiResponse<Device, NetworkError>> createDevice(Map<String, dynamic> requestData) async {
+  Future<ApiResponse<CreateDevice, NetworkError>> createDevice(Map<String, dynamic> requestData) async {
     final url = '$_baseUrl/devices';
     try {
       await MockResponseData.mockApiDelay();
       // final result = await _apiClient.post(url);
       var jsonResponse = jsonDecode(MockResponseData.createDeviceResponse);
-      final Device result = Device.fromJson(jsonResponse);
+      final CreateDevice result = CreateDevice.fromJson(jsonResponse);
       return ApiResponse.completed(result);
     } catch (e, stack) {
       log('error in environments fetch : $e');

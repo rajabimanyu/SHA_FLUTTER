@@ -55,9 +55,9 @@ class _SelectSurroundingState extends State<SelectSurroundingPage> {
       child: BlocListener<NewDeviceBloc, CreateState> (
         listener: (context, state) {
           if(state is CreateDeviceState) {
-            if(state.isSuccessful)  {
+            if(state.status == 1 || state.status == 3)  {
               Navigator.of(context).popAndPushNamed(ShaRoutes.connectDeviceRoute);
-            } else {
+            } else if(state.status == 2){
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
                   content: Text('Some Error occured, Please try again'),
@@ -65,6 +65,13 @@ class _SelectSurroundingState extends State<SelectSurroundingPage> {
                 ),
               );
             }
+          } else if(state is CreateDeviceFailureState) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text('Some Error occured, Please try again'),
+                backgroundColor: Theme.of(context).colorScheme.error,
+              ),
+            );
           }
         },
         child: BlocBuilder<NewDeviceBloc, CreateState>(

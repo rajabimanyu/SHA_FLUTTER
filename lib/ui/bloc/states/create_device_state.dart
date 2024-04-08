@@ -14,6 +14,11 @@ final class InitCreateDeviceState extends CreateState {
 }
 
 final class CreateDeviceState extends CreateState {
-  final bool isSuccessful;
-  const CreateDeviceState(this.isSuccessful);
+  final int status;
+  const CreateDeviceState(this.status);
+}
+
+final class CreateDeviceFailureState extends CreateState {
+  final String errorMessage;
+  const CreateDeviceFailureState(this.errorMessage);
 }

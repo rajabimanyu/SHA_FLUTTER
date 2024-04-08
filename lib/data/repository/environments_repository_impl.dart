@@ -36,25 +36,31 @@ class HomeRepositoryImpl implements HomeRepository {
   HomeRepositoryImpl(this._service);
 
   @override
-  Future<List<envDBModel.Environment>> fetchEnvironments() async {
+  Future<List<envDBModel.Environment>> fetchEnvironments({bool isOffline = false}) async {
     try {
       log("fetchenvapi");
       Box environmentsBox = await Hive.openBox(HIVE_ENVIRONMENT_BOX);
-      log("after box");
-      final ApiResponse<List<env.Environment>, NetworkError> envResponse = await _service.getEnvList();
-      if(envResponse.success) {
-        List<env.Environment> environments = envResponse.data ?? List.empty(growable: false);
-        log('environments from api $environments');
-        if(environments.isNotEmpty) {
-          final currentEnvironment = await getCurrentEnvironment(envDBModel.Environment(uuid: environments[0].id, name: environments[0].name, isCurrentEnvironment: true));
-          final List<envDBModel.Environment> environmentsDB = environments.map((e) => envDBModel.Environment(uuid: e.id, name: e.name, isCurrentEnvironment: currentEnvironment.uuid == e.id)).toList();
-          await environmentsBox.put(HIVE_ENVIRONMENTS, environmentsDB);
-          return environmentsDB;
-        }
-      } else {
+      if(isOffline) {
         if(environmentsBox.containsKey(HIVE_ENVIRONMENTS)) {
           final List<envDBModel.Environment> finalEnvironments = environmentsBox.get(HIVE_ENVIRONMENTS)?.cast<envDBModel.Environment>();
           return finalEnvironments;
+        }
+      } else {
+        final ApiResponse<List<env.Environment>, NetworkError> envResponse = await _service.getEnvList();
+        if(envResponse.success) {
+          List<env.Environment> environments = envResponse.data ?? List.empty(growable: false);
+          log('environments from api $environments');
+          if(environments.isNotEmpty) {
+            final currentEnvironment = await getCurrentEnvironment(envDBModel.Environment(uuid: environments[0].id, name: environments[0].name, isCurrentEnvironment: true));
+            final List<envDBModel.Environment> environmentsDB = environments.map((e) => envDBModel.Environment(uuid: e.id, name: e.name, isCurrentEnvironment: currentEnvironment.uuid == e.id)).toList();
+            await environmentsBox.put(HIVE_ENVIRONMENTS, environmentsDB);
+            return environmentsDB;
+          }
+        } else {
+          if(environmentsBox.containsKey(HIVE_ENVIRONMENTS)) {
+            final List<envDBModel.Environment> finalEnvironments = environmentsBox.get(HIVE_ENVIRONMENTS)?.cast<envDBModel.Environment>();
+            return finalEnvironments;
+          }
         }
       }
     } catch (e, stack) {
@@ -79,27 +85,34 @@ class HomeRepositoryImpl implements HomeRepository {
   }
 
   @override
-  Future<List<surroundingDBModel.Surrounding>> fetchHomeSurroundings() async {
+  Future<List<surroundingDBModel.Surrounding>> fetchHomeSurroundings({bool isOffline = false}) async {
     try {
-      final List<envDBModel.Environment> environments = await fetchEnvironments();
+      final List<envDBModel.Environment> environments = await fetchEnvironments(isOffline: isOffline);
       if(environments.isNotEmpty) {
         Box surroundingsBox = await Hive.openBox(HIVE_SURROUNDING_BOX);
         final envDBModel.Environment currentEnvironment = environments.firstWhere((element) => element.isCurrentEnvironment == true, orElse:() => environments[0]);
-        final ApiResponse<List<surrounding.Surrounding>, NetworkError> surroundingResponse = await _service.fetchSurroundings(currentEnvironment.uuid);
-        if(surroundingResponse.success) {
-          final List<surrounding.Surrounding> surroundings = surroundingResponse.data ?? List.empty(growable: false);
-          log('environments from api $surroundings');
-          final List<surroundingDBModel.Surrounding> surroundingsDB = surroundings.map((e) => surroundingDBModel.Surrounding(uuid: e.id, name: e.name)).toList();
-          if(surroundingsDB.isNotEmpty) {
-            surroundingsBox.put(getSurroundingKey(currentEnvironment.uuid), surroundingsDB);
-            return surroundingsDB;
-          } else {
-            return List.empty(growable: false);
-          }
-        } else {
+        if(isOffline) {
           if(surroundingsBox.containsKey(getSurroundingKey(currentEnvironment.uuid))) {
             final List<surroundingDBModel.Surrounding> finalSurroundings = surroundingsBox.get(getSurroundingKey(currentEnvironment.uuid))?.cast<surroundingDBModel.Surrounding>();
             return finalSurroundings;
+          }
+        } else {
+          final ApiResponse<List<surrounding.Surrounding>, NetworkError> surroundingResponse = await _service.fetchSurroundings(currentEnvironment.uuid);
+          if(surroundingResponse.success) {
+            final List<surrounding.Surrounding> surroundings = surroundingResponse.data ?? List.empty(growable: false);
+            log('environments from api $surroundings');
+            final List<surroundingDBModel.Surrounding> surroundingsDB = surroundings.map((e) => surroundingDBModel.Surrounding(uuid: e.id, name: e.name)).toList();
+            if(surroundingsDB.isNotEmpty) {
+              surroundingsBox.put(getSurroundingKey(currentEnvironment.uuid), surroundingsDB);
+              return surroundingsDB;
+            } else {
+              return List.empty(growable: false);
+            }
+          } else {
+            if(surroundingsBox.containsKey(getSurroundingKey(currentEnvironment.uuid))) {
+              final List<surroundingDBModel.Surrounding> finalSurroundings = surroundingsBox.get(getSurroundingKey(currentEnvironment.uuid))?.cast<surroundingDBModel.Surrounding>();
+              return finalSurroundings;
+            }
           }
         }
       }
