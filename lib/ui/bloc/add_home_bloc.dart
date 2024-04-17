@@ -9,12 +9,11 @@ import '../../data/repository/environments_repository.dart';
 
 class AddHomeBloc extends Bloc<AddHomeEvent, AddHomeState> {
   final HomeRepository _homeRepository;
-  AddHomeBloc(this._homeRepository) : super(const FetchHomeEvent() as AddHomeState) {
-    on<FetchHomeEvent>(_fetchEnvironments as EventHandler<FetchHomeEvent, AddHomeState>);
-
+  AddHomeBloc(this._homeRepository) : super(const InitialState()) {
+    on<FetchHomeEvent>(_fetchEnvironments);
   }
 
-  Future<void> _fetchEnvironments(Emitter<FetchEnvState> emit) async {
+  Future<void> _fetchEnvironments(FetchHomeEvent event, Emitter<AddHomeState> emit) async {
     try {
       final List<Environment> environments = await _homeRepository.fetchEnvironments(isOffline: true);
       if(environments.isNotEmpty) {
