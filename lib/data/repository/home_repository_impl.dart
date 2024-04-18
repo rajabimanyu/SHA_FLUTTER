@@ -12,7 +12,7 @@ import 'package:sha/core/model/ui_state.dart';
 import 'package:sha/data/network/service/models/Thing.dart';
 import 'package:sha/data/network/service/models/surrounding.dart' as surrounding;
 import 'package:sha/data/repository/data_response.dart';
-import 'package:sha/data/repository/environments_repository.dart';
+import 'package:sha/data/repository/home_repository.dart';
 
 import 'package:sha/core/network/network_error.dart';
 import 'package:sha/core/network/response.dart';

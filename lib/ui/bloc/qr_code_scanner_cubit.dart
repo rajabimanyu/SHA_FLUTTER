@@ -3,7 +3,7 @@ import 'dart:developer';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sha/core/model/ui_state.dart';
 import 'package:sha/models/environment.dart';
-import '../../data/repository/environments_repository.dart';
+import '../../data/repository/home_repository.dart';
 
 class QrCodeScannerCubit extends Cubit<UIState> {
   final HomeRepository _environmentRepository;

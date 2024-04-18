@@ -8,7 +8,7 @@ import 'package:sha/models/device.dart';
 import 'package:sha/models/surrounding.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../../data/repository/environments_repository.dart';
+import '../../data/repository/home_repository.dart';
 import '../../models/environment.dart';
 
 class HomeCubit extends Cubit<UIState> {

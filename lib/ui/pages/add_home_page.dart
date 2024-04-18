@@ -90,17 +90,51 @@ class AddHomePageState extends State<AddHomePage> {
                   // selectedSurroundingId = surroundings[position].uuid;
                 },
                 child:Container(
+                  decoration: BoxDecoration( //                    <-- BoxDecoration
+                    border: Border(bottom: BorderSide()),
+                  ),
                   alignment: Alignment.center,
                   height: 50,
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Expanded(child: Text(
-                          homes[position].name,
+                          '${homes[position].name} dsfsdfdfsfsdfsdfsdfsdf',
+                          overflow: TextOverflow.ellipsis,
                           style: TextStyle(
                               color: Colors.white,
-                              fontSize: 20
+                              fontSize: 16
                           )),
+                      ),
+                      if(homes[position].isCurrentEnvironment)
+                        IconButton(
+                          onPressed: () {},
+                          icon:Icon(
+                            Icons.star,
+                            color: Theme.of(context).buttonTheme.colorScheme?.primary ?? Colors.blue,
+                            size: 16,
+                          ),
+                          highlightColor: Theme.of(context).buttonTheme.colorScheme?.background ?? Colors.blue,
+                        )
+                      else
+                        IconButton(
+                          onPressed: () {
+                            addHomeBloc.add(event)
+                          },
+                          icon: Icon(
+                            Icons.exit_to_app,
+                            color: Theme.of(context).buttonTheme.colorScheme?.primary ?? Colors.blue,
+                            size: 28,
+                          ),
+                          highlightColor: Theme.of(context).buttonTheme.colorScheme?.inversePrimary ?? Colors.lightBlue,
+                        ),
+                      IconButton(onPressed: (){},
+                        icon: Icon(
+                          Icons.delete,
+                          color: Theme.of(context).buttonTheme.colorScheme?.inversePrimary ?? Colors.blue,
+                          size: 28,
+                        ),
+                        highlightColor: Theme.of(context).buttonTheme.colorScheme?.primary ?? Colors.lightBlue,
                       ),
                       // if(selectedIndex == position) Icon(
                       //   Icons.done,

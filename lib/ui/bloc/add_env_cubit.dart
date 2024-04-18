@@ -9,7 +9,7 @@ import 'package:sha/models/environment.dart';
 import 'package:sha/models/surrounding.dart';
 
 import '../../data/repository/device_repository.dart';
-import '../../data/repository/environments_repository.dart';
+import '../../data/repository/home_repository.dart';
 import '../../data/repository/surroundings_repository.dart';
 
 class AddNewEnvironmentBloc extends Cubit<UIState> {

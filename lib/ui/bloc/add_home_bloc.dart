@@ -5,7 +5,7 @@ import 'package:sha/models/environment.dart';
 import 'package:sha/ui/bloc/events/add_home_events.dart';
 import 'package:sha/ui/bloc/states/add_home_state.dart';
 
-import '../../data/repository/environments_repository.dart';
+import '../../data/repository/home_repository.dart';
 
 class AddHomeBloc extends Bloc<AddHomeEvent, AddHomeState> {
   final HomeRepository _homeRepository;
@@ -24,6 +24,15 @@ class AddHomeBloc extends Bloc<AddHomeEvent, AddHomeState> {
     } catch(e, stack) {
       log('error in fetching environments ${e.toString()}');
       log('error in fetching environments stacktrace ${stack.toString()}');
+    }
+  }
+
+  Future<void> _switchEnvironment(SwitchHomeEvent event, Emitter<AddHomeState> emit) async {
+    try {
+
+    } catch(e, stack) {
+      log('error in switching environments ${e.toString()}');
+      log('error in switching environments stacktrace ${stack.toString()}');
     }
   }
 
