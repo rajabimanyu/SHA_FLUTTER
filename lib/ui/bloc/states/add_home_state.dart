@@ -23,3 +23,8 @@ class AddHomeFailureState extends AddHomeState {
   final String errMessage;
   const AddHomeFailureState({required this.errMessage});
 }
+
+class SwitchHomeState extends AddHomeState {
+  final bool isSwitched;
+  const SwitchHomeState({required this.isSwitched});
+}

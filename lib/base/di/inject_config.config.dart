@@ -18,6 +18,8 @@ import '../../data/repository/surroundings_repository.dart' as _i6;
 import '../../data/repository/surroundings_repository_impl.dart' as _i7;
 import '../../data/repository/device_repository.dart' as _i8;
 import '../../data/repository/device_repository_impl.dart' as _i9;
+import '../../data/repository/environment_repository.dart' as _i10;
+import '../../data/repository/environment_repository_impl.dart' as _i11;
 
 // initializes the registration of main-scope dependencies inside of GetIt
 _i1.GetIt $initGetIt(
@@ -37,5 +39,7 @@ _i1.GetIt $initGetIt(
       () => _i7.SurroundingsRepositoryImpl(gh<_i3.ApiService>()));
   gh.factory<_i8.DeviceRepository>(
           () => _i9.DeviceRepositoryImpl(gh<_i3.ApiService>()));
+  gh.factory<_i10.EnvironmentRepository>(
+          () => _i11.EnvironmentRepositoryImpl());
   return getIt;
 }
