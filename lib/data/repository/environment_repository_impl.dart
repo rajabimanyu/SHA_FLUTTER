@@ -5,14 +5,15 @@ import 'package:injectable/injectable.dart';
 import 'package:sha/data/repository/environment_repository.dart';
 import 'package:sha/models/environment.dart' as envDBModel;
 import '../../base/ShaConstants.dart';
+import '../network/service/api_service.dart';
 
 @Injectable(as: EnvironmentRepository)
 class EnvironmentRepositoryImpl implements EnvironmentRepository {
-  EnvironmentRepositoryImpl();
+  final ApiService _service;
+  EnvironmentRepositoryImpl(this._service);
   @override
   Future<bool> switchEnvironment(String envId) async {
     try {
-      log("swicth home env");
       Box environmentsBox = await Hive.openBox(HIVE_ENVIRONMENT_BOX);
       final List<envDBModel.Environment> environments = environmentsBox.get(HIVE_ENVIRONMENTS)?.cast<envDBModel.Environment>();
       final envDBModel.Environment currentEnvironment = environments.firstWhere(
@@ -38,20 +39,23 @@ class EnvironmentRepositoryImpl implements EnvironmentRepository {
           name: selectedEnvironment.name,
           isCurrentEnvironment: true);
       environments[selectedEnvironmentIndex] = newSelectedCurrentEnvironment;
-      log("swicth home true");
-
-      final List<envDBModel.Environment> finalenvironments = environmentsBox.get(HIVE_ENVIRONMENTS)?.cast<envDBModel.Environment>();
-      log('changed env $finalenvironments');
-      for (var element in finalenvironments) {
-        log('env info ${element.uuid}, ${element.name}, ${element.isCurrentEnvironment}');
-      }
-
       return true;
     } catch (e, stack) {
       log('error in switching environment ${e.toString()}');
       log('error in switching environment stacktrace ${stack.toString()}');
     }
-    log("swicth home fail");
+    return false;
+  }
+
+  @override
+  Future<bool> deleteEnvironment(String envId) async {
+    try {
+
+      return true;
+    } catch(e, stack) {
+      log('error in deleting environment ${e.toString()}');
+      log('error in deleting environment stacktrace ${stack.toString()}');
+    }
     return false;
   }
 }

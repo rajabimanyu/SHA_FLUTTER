@@ -118,44 +118,7 @@ class AddHomePageState extends State<AddHomePage> {
                           highlightColor: Theme.of(context).buttonTheme.colorScheme?.background ?? Colors.blue,
                         )
                       else
-                        BlocProvider(
-                            create: (_) => addHomeBloc,
-                            child: BlocListener<AddHomeBloc, AddHomeState>(
-                                listener: (context, state) {
-                              if (state is SwitchHomeState) {
-                                if (state.isSwitched) {
-                                  Navigator.of(context).popUntil((route) =>
-                                      route.settings.name ==
-                                      ShaRoutes.homePageRoute);
-                                  Navigator.of(context)
-                                      .popAndPushNamed(ShaRoutes.homePageRoute);
-                                }
-                              }
-                            }, child: BlocBuilder<AddHomeBloc, AddHomeState>(
-                              builder: (context, state) {
-                                return IconButton(
-                                  onPressed: () {
-                                    log("swicth home click");
-                                    addHomeBloc.add(SwitchHomeEvent(
-                                        envId: homes[position].uuid));
-                                  },
-                                  icon: Icon(
-                                    Icons.exit_to_app,
-                                    color: Theme.of(context)
-                                            .buttonTheme
-                                            .colorScheme
-                                            ?.primary ??
-                                        Colors.blue,
-                                    size: 28,
-                                  ),
-                                  highlightColor: Theme.of(context)
-                                          .buttonTheme
-                                          .colorScheme
-                                          ?.inversePrimary ??
-                                      Colors.lightBlue,
-                                );
-                              },
-                            ))),
+                        _switchHomeWidget(homes, position),
                       IconButton(onPressed: (){},
                         icon: Icon(
                           Icons.delete,
@@ -192,6 +155,125 @@ class AddHomePageState extends State<AddHomePage> {
         child: const CircularProgressIndicator(),
       );
     }
+  }
+
+  void _showConsent(String title, String message, {required Function() onPositiveButtonClicked,required Function() onNegativeButtonClicked}) {
+    showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: Text(title),
+            content: Text(
+                message,
+                style: TextStyle(
+                    fontSize: 20
+                )),
+            actions: <Widget>[
+              MaterialButton(
+                color: Theme.of(context).buttonTheme.colorScheme?.background,
+                textColor: Theme.of(context).buttonTheme.colorScheme?.primary,
+                child: const Text('Cancel'),
+                onPressed: () {
+                  setState(() {
+                    onNegativeButtonClicked();
+                  });
+                },
+              ),
+              MaterialButton(
+                color: Theme.of(context).buttonTheme.colorScheme?.background,
+                textColor: Theme.of(context).buttonTheme.colorScheme?.primary,
+                child: const Text('Proceed'),
+                onPressed: () {
+                  onPositiveButtonClicked();
+                },
+              ),
+            ],
+          );
+        });
+  }
+
+  Widget _switchHomeWidget(List<Environment> homes, int position) {
+    return BlocProvider(
+        create: (_) => addHomeBloc,
+        child: BlocListener<AddHomeBloc, AddHomeState>(
+            listener: (context, state) {
+              if (state is SwitchHomeState) {
+                if (state.isSwitched) {
+                  Navigator.of(context).popUntil((route) =>
+                  route.settings.name ==
+                      ShaRoutes.homePageRoute);
+                  Navigator.of(context)
+                      .popAndPushNamed(ShaRoutes.homePageRoute);
+                }
+              }
+            }, child: BlocBuilder<AddHomeBloc, AddHomeState>(
+          builder: (context, state) {
+            return IconButton(
+              onPressed: () {
+                  log("swicth home click");
+                  _showConsent('Oops', 'Are you sure want to switch your Home', onPositiveButtonClicked : () => {
+                  addHomeBloc.add(SwitchHomeEvent(envId: homes[position].uuid))
+                }, onNegativeButtonClicked: () => {
+                  Navigator.pop(context)
+                });
+              },
+              icon: Icon(
+                Icons.exit_to_app,
+                color: Theme.of(context)
+                    .buttonTheme
+                    .colorScheme
+                    ?.primary ??
+                    Colors.blue,
+                size: 28,
+              ),
+              highlightColor: Theme.of(context)
+                  .buttonTheme
+                  .colorScheme
+                  ?.inversePrimary ??
+                  Colors.lightBlue,
+            );
+          },
+        )));
+  }
+
+  Widget _deleteHomeWidget(List<Environment> homes, int position) {
+    return BlocProvider(
+        create: (_) => addHomeBloc,
+        child: BlocListener<AddHomeBloc, AddHomeState>(
+            listener: (context, state) {
+              if (state is SwitchHomeState) {
+                if (state.isSwitched) {
+                  Navigator.of(context).popUntil((route) =>
+                  route.settings.name ==
+                      ShaRoutes.homePageRoute);
+                  Navigator.of(context)
+                      .popAndPushNamed(ShaRoutes.homePageRoute);
+                }
+              }
+            }, child: BlocBuilder<AddHomeBloc, AddHomeState>(
+          builder: (context, state) {
+            return IconButton(
+              onPressed: () {
+                addHomeBloc.add(SwitchHomeEvent(
+                    envId: homes[position].uuid));
+              },
+              icon: Icon(
+                Icons.exit_to_app,
+                color: Theme.of(context)
+                    .buttonTheme
+                    .colorScheme
+                    ?.primary ??
+                    Colors.blue,
+                size: 28,
+              ),
+              highlightColor: Theme.of(context)
+                  .buttonTheme
+                  .colorScheme
+                  ?.inversePrimary ??
+                  Colors.lightBlue,
+            );
+          },
+        )));
   }
 
 }

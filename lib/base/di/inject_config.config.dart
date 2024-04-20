@@ -40,6 +40,6 @@ _i1.GetIt $initGetIt(
   gh.factory<_i8.DeviceRepository>(
           () => _i9.DeviceRepositoryImpl(gh<_i3.ApiService>()));
   gh.factory<_i10.EnvironmentRepository>(
-          () => _i11.EnvironmentRepositoryImpl());
+          () => _i11.EnvironmentRepositoryImpl(gh<_i3.ApiService>()));
   return getIt;
 }

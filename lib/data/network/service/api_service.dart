@@ -142,6 +142,21 @@ class ApiService {
     }
   }
 
+  Future<ApiResponse<CreateDevice, NetworkError>> createDevice(String envId) async {
+    final url = '$_baseUrl/environments/$envId';
+    try {
+      await MockResponseData.mockApiDelay();
+      // final result = await _apiClient.post(url);
+      var jsonResponse = jsonDecode(MockResponseData.createDeviceResponse);
+      final CreateDevice result = CreateDevice.fromJson(jsonResponse);
+      return ApiResponse.completed(result);
+    } catch (e, stack) {
+      log('error in environments fetch : $e');
+      print('error in environments fetch stack : $stack');
+      return ApiResponse.error(_defaultError);
+    }
+  }
+
   String _getDevices(String surroundingId) {
     switch (surroundingId) {
       case "surrounding1611f5eb-a9ee-410e-9cbe-7294111a6d25":

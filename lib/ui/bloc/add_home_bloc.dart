@@ -32,7 +32,6 @@ class AddHomeBloc extends Bloc<AddHomeEvent, AddHomeState> {
 
   Future<void> _switchEnvironment(SwitchHomeEvent event, Emitter<AddHomeState> emit) async {
     try {
-      log("swicth home event");
       bool isSwitched = await _environmentRepository.switchEnvironment(event.envId);
       emit(SwitchHomeState(isSwitched: isSwitched));
     } catch(e, stack) {
