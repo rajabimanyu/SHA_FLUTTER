@@ -1,7 +1,11 @@
 import 'dart:developer';
+import 'dart:ffi';
 
 import 'package:hive/hive.dart';
 import 'package:injectable/injectable.dart';
+import 'package:sha/core/network/network_error.dart';
+import 'package:sha/core/network/response.dart';
+import 'package:sha/data/network/service/models/DeleteEnvironment.dart';
 import 'package:sha/data/repository/environment_repository.dart';
 import 'package:sha/models/environment.dart' as envDBModel;
 import '../../base/ShaConstants.dart';
@@ -50,8 +54,27 @@ class EnvironmentRepositoryImpl implements EnvironmentRepository {
   @override
   Future<bool> deleteEnvironment(String envId) async {
     try {
-
-      return true;
+      final ApiResponse<DeleteEnvironment, NetworkError> deleteEnvironmentResponse = await _service.deleteEnvironment(envId);
+      if(deleteEnvironmentResponse.success) {
+        if(deleteEnvironmentResponse.data?.success ?? false) {
+          Box environmentsBox = await Hive.openBox(HIVE_ENVIRONMENT_BOX);
+          final List<envDBModel.Environment> environments = environmentsBox.get(HIVE_ENVIRONMENTS)?.cast<envDBModel.Environment>();
+          int envIndex = environments.indexWhere((element) => element.uuid == envId);
+          envDBModel.Environment environment = environments[envIndex];
+          if(environment.isCurrentEnvironment) {
+            final nonCurrentEnvironments = environments.where((element) => element.isCurrentEnvironment == false).cast<envDBModel.Environment>();
+            if(nonCurrentEnvironments.isNotEmpty) {
+              final envDBModel.Environment nonCurrentEnvironment = nonCurrentEnvironments.first;
+              await switchEnvironment(nonCurrentEnvironment.uuid);
+              environments.removeWhere((element) => element.uuid == envId);
+              return true;
+            }
+          } else {
+            environments.removeWhere((element) => element.uuid == envId);
+            return true;
+          }
+        }
+      }
     } catch(e, stack) {
       log('error in deleting environment ${e.toString()}');
       log('error in deleting environment stacktrace ${stack.toString()}');

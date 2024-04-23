@@ -15,3 +15,8 @@ final class SwitchHomeEvent extends AddHomeEvent {
   final String envId;
   const SwitchHomeEvent({required this.envId});
 }
+
+final class DeleteHomeEvent extends AddHomeEvent {
+  final String envId;
+  const DeleteHomeEvent({required this.envId});
+}

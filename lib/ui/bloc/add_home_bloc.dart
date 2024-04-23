@@ -40,4 +40,14 @@ class AddHomeBloc extends Bloc<AddHomeEvent, AddHomeState> {
     }
   }
 
+  Future<void> _deleteEnvironment(DeleteHomeEvent event, Emitter<DeleteHomeState> emit) async {
+    try {
+      bool isSwitched = await _environmentRepository.deleteEnvironment(event.envId);
+      emit(DeleteHomeState(isSwitched: isSwitched));
+    } catch(e, stack) {
+      log('error in deleting environments ${e.toString()}');
+      log('error in deleting environments stacktrace ${stack.toString()}');
+    }
+  }
+
 }

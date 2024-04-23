@@ -28,3 +28,8 @@ class SwitchHomeState extends AddHomeState {
   final bool isSwitched;
   const SwitchHomeState({required this.isSwitched});
 }
+
+class DeleteHomeState extends AddHomeState {
+  final bool isDeleted;
+  const DeleteHomeState({required this.isDeleted});
+}

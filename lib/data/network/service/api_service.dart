@@ -10,6 +10,7 @@ import 'package:sha/core/network/network_error.dart';
 import 'package:sha/core/network/response.dart';
 import 'package:sha/data/network/service/mock_response_data.dart';
 import 'package:sha/data/network/service/models/CreateDevice.dart';
+import 'package:sha/data/network/service/models/DeleteEnvironment.dart';
 import 'package:sha/data/network/service/models/Device.dart';
 import 'package:sha/data/network/service/models/Environment.dart' as env;
 import 'package:sha/data/network/service/models/Thing.dart';
@@ -142,13 +143,13 @@ class ApiService {
     }
   }
 
-  Future<ApiResponse<CreateDevice, NetworkError>> createDevice(String envId) async {
+  Future<ApiResponse<DeleteEnvironment, NetworkError>> deleteEnvironment(String envId) async {
     final url = '$_baseUrl/environments/$envId';
     try {
       await MockResponseData.mockApiDelay();
       // final result = await _apiClient.post(url);
-      var jsonResponse = jsonDecode(MockResponseData.createDeviceResponse);
-      final CreateDevice result = CreateDevice.fromJson(jsonResponse);
+      var jsonResponse = jsonDecode(MockResponseData.deleteEnvironmentResponse);
+      final DeleteEnvironment result = DeleteEnvironment.fromJson(jsonResponse);
       return ApiResponse.completed(result);
     } catch (e, stack) {
       log('error in environments fetch : $e');

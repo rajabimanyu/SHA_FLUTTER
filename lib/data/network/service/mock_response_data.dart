@@ -545,4 +545,9 @@ class MockResponseData {
     ]
   }
   }''';
+
+  static const deleteEnvironmentResponse = '''
+  {
+    "success": "true"
+  }''';
 }
