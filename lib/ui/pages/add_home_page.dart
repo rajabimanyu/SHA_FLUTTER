@@ -21,11 +21,14 @@ class AddHomePage extends StatefulWidget {
 }
 
 class AddHomePageState extends State<AddHomePage> {
-  final AddHomeBloc addHomeBloc = AddHomeBloc(getIt.get(), getIt.get());
-  final AddHomeBloc deleteHomeBloc = AddHomeBloc(getIt.get(), getIt.get());
+  late AddHomeBloc addHomeBloc;
+  late AddHomeBloc mainHomeBloc;
   @override
   void initState() {
+    log('init state ');
     super.initState();
+    addHomeBloc = AddHomeBloc(getIt.get(), getIt.get());
+    mainHomeBloc = AddHomeBloc(getIt.get(), getIt.get())..add(FetchHomeEvent());
   }
 
   @override
@@ -39,7 +42,7 @@ class AddHomePageState extends State<AddHomePage> {
 
   Widget _buildHomesWidget() {
     return BlocProvider(
-        create: (_) => AddHomeBloc(getIt.get(), getIt.get())..add(FetchHomeEvent()),
+        create: (_) => mainHomeBloc,
       child: BlocListener<AddHomeBloc, AddHomeState> (
         listener: (context, state) {
           if(state is InitialState) {
@@ -64,7 +67,12 @@ class AddHomePageState extends State<AddHomePage> {
                             child: ElevatedButton(onPressed: () {
                               // _showLoaderDialog(context);
                               // context.read<AddHomeBloc>().add(CreateHomeEvent(selectedSurroundingId, codeData));
-                            }, style: Theme.of(context).elevatedButtonTheme.style, child: const Text('Proceed'))
+                              _showAddHomeDialog('Enter Home Name', onPositiveButtonClicked: () => {
+
+                              }, onNegativeButtonClicked: () => {
+
+                              });
+                            }, style: Theme.of(context).elevatedButtonTheme.style, child: const Text('Add Home'))
                         ))
                   ]
               ),
@@ -168,9 +176,8 @@ class AddHomePageState extends State<AddHomePage> {
                 textColor: Theme.of(context).buttonTheme.colorScheme?.primary,
                 child: const Text('Cancel'),
                 onPressed: () {
-                  setState(() {
-                    onNegativeButtonClicked();
-                  });
+                  Navigator.pop(context);
+                  onNegativeButtonClicked();
                 },
               ),
               MaterialButton(
@@ -178,6 +185,7 @@ class AddHomePageState extends State<AddHomePage> {
                 textColor: Theme.of(context).buttonTheme.colorScheme?.primary,
                 child: const Text('Proceed'),
                 onPressed: () {
+                  Navigator.pop(context);
                   onPositiveButtonClicked();
                 },
               ),
@@ -186,19 +194,86 @@ class AddHomePageState extends State<AddHomePage> {
         });
   }
 
+  final TextEditingController _textFieldController = TextEditingController();
+  String? valueText;
+  void _showAddHomeDialog(String title, {required Function() onPositiveButtonClicked,required Function() onNegativeButtonClicked}) {
+    showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: Text(title),
+            content: TextField(
+              onChanged: (value) {
+                setState(() {
+                  valueText = value;
+                });
+              },
+              controller: _textFieldController,
+              decoration: const InputDecoration(hintText: 'John'),
+            ),
+            actions: <Widget>[
+              MaterialButton(
+                color: Theme.of(context).buttonTheme.colorScheme?.background,
+                textColor: Theme.of(context).buttonTheme.colorScheme?.primary,
+                child: const Text('Cancel'),
+                onPressed: () {
+                  Navigator.pop(context);
+                  onNegativeButtonClicked();
+                },
+              ),
+              MaterialButton(
+                color: Theme.of(context).buttonTheme.colorScheme?.background,
+                textColor: Theme.of(context).buttonTheme.colorScheme?.primary,
+                child: const Text('Proceed'),
+                onPressed: () {
+                  Navigator.pop(context);
+                  onPositiveButtonClicked();
+                },
+              ),
+            ],
+          );
+        });
+  }
+
+  void _showLoader() {
+    showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (context) {
+          return AlertDialog(
+            title: Text('Processing...'),
+            content: Text(
+                'Processing...',
+                style: TextStyle(
+                    fontSize: 20
+                )),
+          );
+        });
+  }
+
   Widget _deleteWidget(List<Environment> homes, int position) {
+    BuildContext? dialogContext;
+    log('delete renbder');
     return BlocProvider(
-        create: (_) => deleteHomeBloc,
+        create: (_) => AddHomeBloc(getIt.get(), getIt.get()),
         child: BlocListener<AddHomeBloc, AddHomeState>(
             listener: (context, state) {
+              log('delete listen');
               if (state is DeleteHomeState) {
-                if (state.isDeleted) {
-                  Navigator.of(context).popUntil((route) =>
-                  route.settings.name ==
-                      ShaRoutes.homePageRoute);
-                  Navigator.of(context)
-                      .popAndPushNamed(ShaRoutes.homePageRoute);
-                }
+                  if (state.isDeleted) {
+                    if(state.isCurrentEnvironment) {
+                      Navigator.of(context).popUntil((route) =>
+                      route.settings.name ==
+                          ShaRoutes.homePageRoute);
+                      Navigator.of(context)
+                          .popAndPushNamed(ShaRoutes.homePageRoute);
+                    } else {
+                      if (isThereCurrentDialogShowing(context)) {
+                        Navigator.pop(context);
+                      }
+                      mainHomeBloc.add(FetchHomeEvent());
+                    }
+                  }
               }
             }, child: BlocBuilder<AddHomeBloc, AddHomeState>(
           builder: (context, state) {
@@ -207,20 +282,16 @@ class AddHomePageState extends State<AddHomePage> {
                 log("swicth home click");
                 if(homes[position].isCurrentEnvironment) {
                   _showConsent('Please Confirm', 'Deleting default Home - ${homes[position].name} will switch to next home automatically', onPositiveButtonClicked : () => {
-                    deleteHomeBloc.add(DeleteHomeEvent(envId: homes[position].uuid))
-                  }, onNegativeButtonClicked: () => {
-                    Navigator.pop(context)
-                  });
+                    proceedDelete(homes[position], context.read<AddHomeBloc>())
+                  }, onNegativeButtonClicked: () => {});
                 } else {
                   _showConsent('Please Confirm', 'Are you sure want to delete Home - ${homes[position].name}', onPositiveButtonClicked : () => {
-                    deleteHomeBloc.add(DeleteHomeEvent(envId: homes[position].uuid))
-                  }, onNegativeButtonClicked: () => {
-                    Navigator.pop(context)
-                  });
+                    proceedDelete(homes[position], context.read<AddHomeBloc>())
+                  }, onNegativeButtonClicked: () => {});
                 }
               },
               icon: Icon(
-                Icons.exit_to_app,
+                Icons.delete,
                 color: Theme.of(context)
                     .buttonTheme
                     .colorScheme
@@ -236,6 +307,11 @@ class AddHomePageState extends State<AddHomePage> {
             );
           },
         )));
+  }
+
+  void proceedDelete(Environment environment, AddHomeBloc deleteHomeBloc) {
+    deleteHomeBloc.add(DeleteHomeEvent(envId: environment.uuid,isCurrentEnvironment: environment.isCurrentEnvironment));
+    _showLoader();
   }
 
   Widget _switchHomeWidget(List<Environment> homes, int position) {

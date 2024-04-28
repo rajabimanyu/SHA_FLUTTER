@@ -52,16 +52,14 @@ class EnvironmentRepositoryImpl implements EnvironmentRepository {
   }
 
   @override
-  Future<bool> deleteEnvironment(String envId) async {
+  Future<bool> deleteEnvironment(String envId, bool isCurrentEnvironment) async {
     try {
       final ApiResponse<DeleteEnvironment, NetworkError> deleteEnvironmentResponse = await _service.deleteEnvironment(envId);
       if(deleteEnvironmentResponse.success) {
         if(deleteEnvironmentResponse.data?.success ?? false) {
           Box environmentsBox = await Hive.openBox(HIVE_ENVIRONMENT_BOX);
           final List<envDBModel.Environment> environments = environmentsBox.get(HIVE_ENVIRONMENTS)?.cast<envDBModel.Environment>();
-          int envIndex = environments.indexWhere((element) => element.uuid == envId);
-          envDBModel.Environment environment = environments[envIndex];
-          if(environment.isCurrentEnvironment) {
+          if(isCurrentEnvironment) {
             final nonCurrentEnvironments = environments.where((element) => element.isCurrentEnvironment == false).cast<envDBModel.Environment>();
             if(nonCurrentEnvironments.isNotEmpty) {
               final envDBModel.Environment nonCurrentEnvironment = nonCurrentEnvironments.first;
@@ -69,10 +67,9 @@ class EnvironmentRepositoryImpl implements EnvironmentRepository {
               environments.removeWhere((element) => element.uuid == envId);
               return true;
             }
-          } else {
-            environments.removeWhere((element) => element.uuid == envId);
-            return true;
           }
+          environments.removeWhere((element) => element.uuid == envId);
+          return true;
         }
       }
     } catch(e, stack) {

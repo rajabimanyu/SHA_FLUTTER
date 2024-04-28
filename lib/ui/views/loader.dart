@@ -1,7 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-showLoaderDialog(BuildContext context){
+BuildContext? showLoaderDialog(BuildContext context){
+  BuildContext? dialogContext;
   AlertDialog alert=AlertDialog(
     content: Row(
       children: [
@@ -12,7 +13,12 @@ showLoaderDialog(BuildContext context){
   showDialog(barrierDismissible: false,
     context:context,
     builder:(BuildContext context){
+    dialogContext = context;
       return alert;
     },
   );
+  return dialogContext;
 }
+
+isThereCurrentDialogShowing(BuildContext context) =>
+    ModalRoute.of(context)?.isCurrent != true;

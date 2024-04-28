@@ -31,5 +31,7 @@ class SwitchHomeState extends AddHomeState {
 
 class DeleteHomeState extends AddHomeState {
   final bool isDeleted;
-  const DeleteHomeState({required this.isDeleted});
+  final bool isCurrentEnvironment;
+  final bool isLoading;
+  const DeleteHomeState({required this.isDeleted, required this.isCurrentEnvironment, required this.isLoading});
 }
